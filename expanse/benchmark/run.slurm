@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --account=uic193
 #SBATCH --partition=compute
-#SBATCH --time=00:10:00
+#SBATCH --time=00:05:00
 #SBATCH --ntasks-per-node=1
 
 module purge
@@ -16,10 +16,12 @@ max_level=${3:-"3"}
 
 nthreads=128
 if [ "$pp" == "lci" ] ; then
+  export LCI_USE_DREG=2
+  export LCM_LOG_LEVEL=info
   nthreads=127
-  SRUN_EXTRA_OPTION="--mpi=pmi2"
+  SRUN_EXTRA_OPTION="${SRUN_EXTRA_OPTION} --mpi=pmi2"
 elif [ "$pp" == "mpi" ]; then
-  SRUN_EXTRA_OPTION="--mpi=pmix"
+  SRUN_EXTRA_OPTION="${SRUN_EXTRA_OPTION} --mpi=pmix"
 fi
 
 # Run the job

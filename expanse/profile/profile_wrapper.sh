@@ -15,6 +15,8 @@ max_level=${3:-"6"}
 nthreads=128
 if [ "$pp" == "lci" ] ; then
 #  export LCI_PACKET_RETURN_THRESHOLD=0
+  export LCI_USE_DREG=0
+  export LCM_LOG_LEVEL=info
   nthreads=127
   SRUN_EXTRA_OPTION="--mpi=pmi2"
 elif [ "$pp" == "mpi" ]; then

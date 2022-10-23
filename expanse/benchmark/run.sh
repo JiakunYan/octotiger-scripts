@@ -10,9 +10,9 @@ OCTO_SCRIPT_PATH=$(realpath "${OCTO_SCRIPT_PATH:-../../}")
 export OCTO_SCRIPT_PATH
 
 tasks=("rs")
-max_levels=("5")
-nnodes=(1 2 4 8 16 32)
-pps=("lci" "mpi")
+max_levels=("6")
+nnodes=(2)
+pps=("lci")
 
 # create the ./log directory
 mkdir_s ./log

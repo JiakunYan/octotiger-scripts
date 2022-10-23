@@ -2,7 +2,7 @@ init
 run
 data
 draw
-log
+log*
 result
 summary
 summary.tar.gz
