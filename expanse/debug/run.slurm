@@ -1,17 +1,16 @@
 #!/bin/bash
 #SBATCH --account=uic193
 #SBATCH --partition=compute
-#SBATCH --time=00:15:00
+#SBATCH --time=00:05:00
 #SBATCH --ntasks-per-node=1
 
 module purge
-module load DefaultModules
 module load octotiger
-module load lci/local-release
+module load lci/local-debug
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/home/jackyan1/workspace/octotiger-scripts}
 #LOG_OUTPUT_PATH=/scratch/$USER/job_$SLURM_JOB_ID
-LOG_OUTPUT_PATH=/expanse/lustre/scratch/$USER/temp_project
+#LOG_OUTPUT_PATH=/expanse/lustre/scratch/$USER/temp_project
 cd ${OCTO_SCRIPT_PATH}/data || exit 1
 task=${1:-"rs"}
 pp=${2:-"lci"}
@@ -20,19 +19,20 @@ max_level=${3:-"3"}
 nthreads=128
 if [ "$pp" == "lci" ] ; then
 #  export LCI_PACKET_RETURN_THRESHOLD=0
-  export LCI_IBV_USE_ODP=2
-  export LCI_TOUCH_LBUFFER=0
-  export LCI_USE_DREG=0
-  export LCI_USE_DREG_HOOKS=0
-  export LCI_IBV_USE_PREFETCH=0
-  export LCM_LOG_LEVEL=debug
-#  export LCM_LOG_WHITELIST="server;device;bq;log;env"
+#  export LCI_IBV_USE_ODP=1
+#  export LCI_TOUCH_LBUFFER=0
+  export LCI_USE_DREG=1
+#  export LCI_IBV_USE_PREFETCH=0
+#  export LCM_LOG_LEVEL=debug
+#  export LCM_LOG_WHITELIST="server;device;bq;monitor;env"
 #  export LCM_LOG_OUTFILE=$LOG_OUTPUT_PATH/debug.$SLURM_JOB_ID.%.log
-  export LCM_LOG_OUTFILE=stderr
-  export LCII_ENABLE_MONITOR_THREAD=1
-  export LCI_SERVER_MAX_SENDS=128
+#  export LCM_LOG_OUTFILE=stderr
+#  export LCI_ENABLE_MONITOR_THREAD=1
+  export LCI_SERVER_MAX_SENDS=64
+  export LCI_SERVER_MAX_RECVS=1024
   export LCI_SERVER_NUM_PKTS=65536
-  export LCI_SERVER_MAX_CQES=524288
+  export LCI_SERVER_MAX_CQES=8192
+#  export LCI_IBV_ENABLE_EVENT_POLLING_THREAD=1
   nthreads=127
   SRUN_EXTRA_OPTION="${SRUN_EXTRA_OPTION} --mpi=pmi2"
 elif [ "$pp" == "mpi" ]; then
