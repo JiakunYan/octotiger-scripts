@@ -6,7 +6,7 @@
 
 module purge
 module load octotiger
-module load lci/local-debug
+module load lci/local-release-aq
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/home/jackyan1/workspace/octotiger-scripts}
 #LOG_OUTPUT_PATH=/scratch/$USER/job_$SLURM_JOB_ID
