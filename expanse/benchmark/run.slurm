@@ -29,7 +29,7 @@ fi
 
 # Run the job
 date
-echo "run $task with parcelport $pp nthreads ${nthreads}; max_level=${max_level}"
+echo "run $task with parcelport $pp nthreads ${nthreads}; max_level=${max_level} tag=${RUN_TAG}"
 
 if [ "$task" = "rs" ] ; then
 	srun ${SRUN_EXTRA_OPTION} octotiger \

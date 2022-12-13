@@ -11,7 +11,7 @@ export OCTO_SCRIPT_PATH
 
 tasks=("rs")
 max_levels=("6")
-nnodes=(8)
+nnodes=(32)
 pps=("lci")
 
 # create the ./log directory

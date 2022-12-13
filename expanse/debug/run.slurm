@@ -5,8 +5,10 @@
 #SBATCH --ntasks-per-node=1
 
 module purge
-module load octotiger
-module load lci/local-release-aq
+module load octotiger/master
+#module load hpx/local-relWithDebInfo
+module load hpx/local
+module load lci/local
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/home/jackyan1/workspace/octotiger-scripts}
 #LOG_OUTPUT_PATH=/scratch/$USER/job_$SLURM_JOB_ID

@@ -2,7 +2,7 @@
 #SBATCH --partition=compute
 #SBATCH --account=uic193
 #SBATCH --time=5:00
-#SBATCH --nodes=8
+#SBATCH --nodes=32
 #SBATCH --ntasks-per-node=1
 #SBATCH --job-name=profile
 #SBATCH --output=slurm_output.%x-o%j

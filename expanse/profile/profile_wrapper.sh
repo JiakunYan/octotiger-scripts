@@ -3,9 +3,8 @@
 set -x
 
 module purge
-module load DefaultModules
 module load octotiger
-module load lci-debug
+module load lci-relWithDebInfo
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/home/jackyan1/workspace/octotiger-scripts}
 cd ${OCTO_SCRIPT_PATH}/data || exit 1

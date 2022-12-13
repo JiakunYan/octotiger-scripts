@@ -7,16 +7,16 @@ import os,sys
 sys.path.append("../../include")
 from draw_simple import *
 
-name = "20221207-merge-data-tchunk"
+name = "20221212-scq"
 input_path = "run/slurm_output.*"
 output_path = "data/"
 edge_filename = {
-    "format": "\S+-n(\d+)-l\d+\.j\S+",
+    "format": "\S+-n(\d+)-l\d+\.\S+",
     "label": ["nnodes"],
 }
 edge_run = {
-    "format": "run (\S+) with parcelport (\S+) nthreads (\d+); max_level=(\d+)",
-    "label": ["job", "parcelport", "nthreads", "level"],
+    "format": "run (\S+) with parcelport (\S+) nthreads (\d+); max_level=(\d+) tag=(\S+)",
+    "label": ["job", "parcelport", "nthreads", "level", "tag"],
 }
 edge_data = {
     "format": "Computation: (\S+) \(\S+ %\)",
@@ -39,7 +39,9 @@ if __name__ == "__main__":
     df = pd.DataFrame(columns=all_labels)
     state = "init"
     current_entry = dict()
+    print("{} files in total".format(len(filenames)))
     for filename in filenames:
+        found = False
         current_entry = dict()
         m = re.match(edge_filename["format"], filename)
         if m:
@@ -48,6 +50,7 @@ if __name__ == "__main__":
             for label, data in zip(current_label, current_data):
                 current_entry[label] = data
         else:
+            print("Ignore {}".format(filename))
             continue
         with open(filename) as f:
             for line in f.readlines():
@@ -67,9 +70,11 @@ if __name__ == "__main__":
                     for label, data in zip(current_label, current_data):
                         current_entry[label] = data
                     new_df = pd.DataFrame(current_entry, columns=all_labels, index=[1])
-                    print(new_df)
                     df = pd.concat([df, new_df], ignore_index=True)
-                    continue
+                    found = True
+                    break
+        if not found:
+            print("{} not found!".format(filename))
     df = df[all_labels]
     df = df.sort_values(by=all_labels)
     if df.shape[0] == 0:
