@@ -44,18 +44,26 @@ def plot(df, x_key, y_key, tag_key, title):
 
 def batch(df):
     df1_tmp = df[df.apply(lambda row:
-                          (row["tag"] != "nodreg"),
+                          row["level"] == 6 and
+                          row["tag"] != "nodreg",
                           axis=1)]
     df1 = df1_tmp.copy()
     df1["parcelport-tag"] = df1_tmp["parcelport"] +"-" + df1_tmp["tag"]
     plot(df1, "nnodes", "Computation Time(s)", "parcelport-tag", name + "-detail")
 
     df2 = df[df.apply(lambda row:
-                      ((row["tag"] == job_tag) and
+                      row["level"] == 6 and
+                      (((row["tag"] == job_tag) and
                       (row["parcelport"] == "lci")) or
-                      (row["parcelport"] == "mpi"),
+                      (row["parcelport"] == "mpi")),
                       axis=1)]
     plot(df2, "nnodes", "Computation Time(s)", "parcelport", name)
+
+    df3 = df[df.apply(lambda row:
+                      row["level"] == 7,
+                      axis=1)]
+    plot(df3, "nnodes", "Computation Time(s)", "parcelport", name + "-l7")
+
 
 if __name__ == "__main__":
     df = pd.read_csv(os.path.join(input_path, name + ".csv"))
