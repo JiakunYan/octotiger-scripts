@@ -16,12 +16,12 @@ max_level=${3:-"3"}
 
 nthreads=128
 if [ "$pp" == "lci" ] ; then
-  export LCI_SERVER_MAX_SENDS=64
+  export LCI_SERVER_MAX_SENDS=1024
   export LCI_SERVER_MAX_RECVS=4096
   export LCI_SERVER_NUM_PKTS=65536
   export LCI_SERVER_MAX_CQES=65536
   export LCI_USE_DREG=1
-  nthreads=127
+#  nthreads=127
   SRUN_EXTRA_OPTION="${SRUN_EXTRA_OPTION} --mpi=pmi2"
 elif [ "$pp" == "mpi" ]; then
   SRUN_EXTRA_OPTION="${SRUN_EXTRA_OPTION} --mpi=pmix"
@@ -33,9 +33,9 @@ echo "run $task with parcelport $pp nthreads ${nthreads}; max_level=${max_level}
 
 if [ "$task" = "rs" ] ; then
 	srun ${SRUN_EXTRA_OPTION} octotiger \
-        -Ihpx.stacks.use_guard_pages=0 \
+        --hpx:ini=hpx.stacks.use_guard_pages=0 \
         --hpx:ini=hpx.parcel.${pp}.priority=1000 \
-        --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=65536 \
+        --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=8192 \
         --config_file=${OCTO_SCRIPT_PATH}/data/rotating_star.ini \
         --max_level=${max_level} \
         --stop_step=5 \
@@ -49,10 +49,15 @@ if [ "$task" = "rs" ] ; then
         --hydro_device_kernel_type=OFF \
         --hydro_host_kernel_type=LEGACY \
         --amr_boundary_kernel_type=AMR_OPTIMIZED \
-        --hpx:threads=${nthreads}
+        --hpx:threads=${nthreads} \
+        --hpx:ini=hpx.parcel.lci.sendimm=1 \
+        --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
+        --hpx:ini=hpx.parcel.lci.backlog_queue=1 \
+        --hpx:ini=hpx.parcel.lci.try_lock_send=0 \
+        --hpx:ini=hpx.parcel.lci.prg_thread_core=-1
 elif [ "$task" = "dwd" ] ; then
   srun ${SRUN_EXTRA_OPTION} octotiger \
-        -Ihpx.stacks.use_guard_pages=0 \
+        --hpx:ini=hpx.stacks.use_guard_pages=0 \
         --hpx:ini=hpx.parcel.${pp}.priority=1000 \
         --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=65536 \
         --config_file=${OCTO_SCRIPT_PATH}/data/dwd.ini \
@@ -66,7 +71,7 @@ elif [ "$task" = "dwd" ] ; then
         --hpx:threads=${nthreads}
 elif [ "$task" = "gr" ] ; then
 	srun ${SRUN_EXTRA_OPTION} octotiger \
-        -Ihpx.stacks.use_guard_pages=0 \
+        --hpx:ini=hpx.stacks.use_guard_pages=0 \
         --hpx:ini=hpx.parcel.${pp}.priority=1000 \
         --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=65536 \
         --config_file=${OCTO_SCRIPT_PATH}/data/sphere.ini \
@@ -84,7 +89,7 @@ elif [ "$task" = "gr" ] ; then
         --hpx:threads=${nthreads}
 elif [ "$task" = "hy" ] ; then
 	srun ${SRUN_EXTRA_OPTION} octotiger \
-        -Ihpx.stacks.use_guard_pages=0 \
+        --hpx:ini=hpx.stacks.use_guard_pages=0 \
         --hpx:ini=hpx.parcel.${pp}.priority=1000 \
         --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=65536 \
         --config_file=${OCTO_SCRIPT_PATH}/data/blast.ini \

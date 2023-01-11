@@ -23,7 +23,7 @@ fi
 
 perf record --freq=10 --call-graph dwarf -q -o perf.data.$SLURM_JOB_ID.$SLURM_PROCID \
     octotiger \
-            -Ihpx.stacks.use_guard_pages=0 \
+            --hpx:ini=hpx.stacks.use_guard_pages=0 \
             --hpx:ini=hpx.parcel.${pp}.priority=1000 \
             --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=65536 \
             --config_file=${OCTO_SCRIPT_PATH}/data/rotating_star.ini \

@@ -4,10 +4,10 @@ from matplotlib import pyplot as plt
 sys.path.append("../../include")
 from draw_simple import *
 
-job_tag = "scq"
-name = "20221212-" + job_tag
+job_tag = "total"
+name = "20230110-" + job_tag
 input_path = "data/"
-all_labels = ["nnodes", "job", "parcelport", "nthreads", "level", "tag", "Computation Time(s)"]
+all_labels = ["nnodes", "job", "parcelport", "nthreads", "level", "tag", "Time(s)"]
 
 def plot(df, x_key, y_key, tag_key, title):
     fig, ax = plt.subplots()
@@ -49,7 +49,7 @@ def batch(df):
                           axis=1)]
     df1 = df1_tmp.copy()
     df1["parcelport-tag"] = df1_tmp["parcelport"] +"-" + df1_tmp["tag"]
-    plot(df1, "nnodes", "Computation Time(s)", "parcelport-tag", name + "-detail")
+    plot(df1, "nnodes", "Time(s)", "parcelport-tag", name + "-detail")
 
     df2 = df[df.apply(lambda row:
                       row["level"] == 6 and
@@ -57,12 +57,12 @@ def batch(df):
                       (row["parcelport"] == "lci")) or
                       (row["parcelport"] == "mpi")),
                       axis=1)]
-    plot(df2, "nnodes", "Computation Time(s)", "parcelport", name)
+    plot(df2, "nnodes", "Time(s)", "parcelport", name)
 
     df3 = df[df.apply(lambda row:
                       row["level"] == 7,
                       axis=1)]
-    plot(df3, "nnodes", "Computation Time(s)", "parcelport", name + "-l7")
+    plot(df3, "nnodes", "Time(s)", "parcelport", name + "-l7")
 
 
 if __name__ == "__main__":

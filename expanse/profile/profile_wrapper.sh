@@ -4,7 +4,8 @@ set -x
 
 module purge
 module load octotiger
-module load lci-relWithDebInfo
+module load hpx/local-relWithDebInfo
+module load lci/local-relWithDebInfo
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/home/jackyan1/workspace/octotiger-scripts}
 cd ${OCTO_SCRIPT_PATH}/data || exit 1
@@ -17,7 +18,12 @@ if [ "$pp" == "lci" ] ; then
 #  export LCI_PACKET_RETURN_THRESHOLD=0
   export LCI_USE_DREG=1
   export LCM_LOG_LEVEL=info
-  nthreads=127
+  export LCI_SERVER_MAX_SENDS=64
+  export LCI_SERVER_MAX_RECVS=4096
+  export LCI_SERVER_NUM_PKTS=65536
+  export LCI_SERVER_MAX_CQES=65536
+  export LCI_USE_DREG=1
+#  nthreads=127
   SRUN_EXTRA_OPTION="--mpi=pmi2"
 elif [ "$pp" == "mpi" ]; then
   SRUN_EXTRA_OPTION="--mpi=pmix"
@@ -25,7 +31,7 @@ fi
 
 perf record --freq=10 --call-graph dwarf -q -o perf.data.$SLURM_JOB_ID.$SLURM_PROCID \
     octotiger \
-            -Ihpx.stacks.use_guard_pages=0 \
+            --hpx:ini=hpx.stacks.use_guard_pages=0 \
             --hpx:ini=hpx.parcel.${pp}.priority=1000 \
             --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=65536 \
             --config_file=${OCTO_SCRIPT_PATH}/data/rotating_star.ini \
@@ -41,4 +47,6 @@ perf record --freq=10 --call-graph dwarf -q -o perf.data.$SLURM_JOB_ID.$SLURM_PR
             --hydro_device_kernel_type=OFF \
             --hydro_host_kernel_type=LEGACY \
             --amr_boundary_kernel_type=AMR_OPTIMIZED \
-            --hpx:threads=${nthreads}
+            --hpx:threads=${nthreads} \
+            --hpx:ini=hpx.parcel.${pp}.sendimm=1 \
+            --hpx:ini=hpx.parcel.lci.rp_prg_pool=1

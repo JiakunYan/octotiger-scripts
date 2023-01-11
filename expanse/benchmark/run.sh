@@ -15,7 +15,7 @@ max_levels=("6")
 nnodes=(2 4 8 16 32)
 #pps=("lci" "mpi")
 #nnodes=(32)
-pps=("mpi")
+pps=("lci")
 
 # create the ./log directory
 mkdir_s ./run

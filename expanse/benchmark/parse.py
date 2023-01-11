@@ -7,7 +7,7 @@ import os,sys
 sys.path.append("../../include")
 from draw_simple import *
 
-name = "20221212-scq"
+name = "20230110-total"
 input_path = "run/slurm_output.*"
 output_path = "data/"
 edge_filename = {
@@ -19,8 +19,8 @@ edge_run = {
     "label": ["job", "parcelport", "nthreads", "level", "tag"],
 }
 edge_data = {
-    "format": "Computation: (\S+) \(\S+ %\)",
-    "label": ["Computation Time(s)"]
+    "format": "Total: (\S+)",
+    "label": ["Time(s)"]
 }
 all_labels = edge_filename["label"] + edge_run["label"] + edge_data["label"]
 
