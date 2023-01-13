@@ -53,7 +53,6 @@ if [ "$task" = "rs" ] ; then
         --hpx:ini=hpx.parcel.lci.sendimm=1 \
         --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
         --hpx:ini=hpx.parcel.lci.backlog_queue=1 \
-        --hpx:ini=hpx.parcel.lci.try_lock_send=0 \
         --hpx:ini=hpx.parcel.lci.prg_thread_core=-1
 elif [ "$task" = "dwd" ] ; then
   srun ${SRUN_EXTRA_OPTION} octotiger \

@@ -70,8 +70,7 @@ if [ "$task" = "rs" ] ; then
         --hpx:threads=${nthreads} \
         --hpx:ini=hpx.parcel.${pp}.sendimm=1 \
         --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
-        --hpx:ini=hpx.parcel.lci.backlog_queue=0 \
-        --hpx:ini=hpx.parcel.lci.try_lock_send=0 \
+        --hpx:ini=hpx.parcel.lci.backlog_queue=1 \
         --hpx:ini=hpx.parcel.lci.prg_thread_core=-1
 #        --hpx:print-counter="/*/*/${pp}/*"
 #        --hpx:print-counter="/*/*/${pp}/*/*" \

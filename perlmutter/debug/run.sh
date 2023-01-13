@@ -11,7 +11,7 @@ export OCTO_SCRIPT_PATH
 
 # get the root path via environment variable or default value
 tasks=("rs")
-max_levels=("5")
+max_levels=("3")
 nnodes=(2)
 pps=("mpi")
 
