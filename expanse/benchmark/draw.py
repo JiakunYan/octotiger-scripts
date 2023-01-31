@@ -3,13 +3,14 @@ import os,sys, json
 from matplotlib import pyplot as plt
 sys.path.append("../../include")
 from draw_simple import *
+import numpy as np
 
-job_tag = "total"
-name = "20230110-" + job_tag
+job_tag = "all"
+name = "20230130-" + job_tag
 input_path = "data/"
 all_labels = ["nnodes", "job", "parcelport", "nthreads", "level", "tag", "Time(s)"]
 
-def plot(df, x_key, y_key, tag_key, title):
+def plot(df, x_key, y_key, tag_key, title, base = "mpi"):
     fig, ax = plt.subplots()
     lines = parse_tag(df, x_key, y_key, tag_key)
     for line in lines:
@@ -24,7 +25,7 @@ def plot(df, x_key, y_key, tag_key, title):
     # speedup
     ax2 = ax.twinx()
     for line in lines:
-        if "mpi" in line["label"]:
+        if base == line["label"]:
             baseline = line["y"]
             break
     speedup_lines = []
@@ -43,26 +44,37 @@ def plot(df, x_key, y_key, tag_key, title):
         json.dump({"Time": lines, "Speedup": speedup_lines}, outfile)
 
 def batch(df):
+    df["tag"] = np.where((df["parcelport"] == "lci") & (df["tag"] == "default"), "default-numa", df["tag"])
+    df["tag"] = np.where((df["parcelport"] == "lci") & (df["tag"] == "numalocal"), "default", df["tag"])
+
     df1_tmp = df[df.apply(lambda row:
                           row["level"] == 6 and
-                          row["tag"] != "nodreg",
+                          row["tag"] in ["default", "numactl"],
                           axis=1)]
     df1 = df1_tmp.copy()
     df1["parcelport-tag"] = df1_tmp["parcelport"] +"-" + df1_tmp["tag"]
-    plot(df1, "nnodes", "Time(s)", "parcelport-tag", name + "-detail")
+    plot(df1, "nnodes", "Time(s)", "parcelport-tag", name + "-numa", base="mpi-default")
 
-    df2 = df[df.apply(lambda row:
-                      row["level"] == 6 and
-                      (((row["tag"] == job_tag) and
-                      (row["parcelport"] == "lci")) or
-                      (row["parcelport"] == "mpi")),
-                      axis=1)]
-    plot(df2, "nnodes", "Time(s)", "parcelport", name)
+    df1_tmp = df[df.apply(lambda row:
+                          row["level"] == 6 and
+                          row["tag"] not in ["default", "numalocal"],
+                          axis=1)]
+    df1 = df1_tmp.copy()
+    df1["parcelport-tag"] = df1_tmp["parcelport"] +"-" + df1_tmp["tag"]
+    plot(df1, "nnodes", "Time(s)", "parcelport-tag", name + "-opt", base="mpi-numactl")
 
-    df3 = df[df.apply(lambda row:
-                      row["level"] == 7,
-                      axis=1)]
-    plot(df3, "nnodes", "Time(s)", "parcelport", name + "-l7")
+    # df2 = df[df.apply(lambda row:
+    #                   row["level"] == 6 and
+    #                   (((row["tag"] == job_tag) and
+    #                   (row["parcelport"] == "lci")) or
+    #                   (row["parcelport"] == "mpi")),
+    #                   axis=1)]
+    # plot(df2, "nnodes", "Time(s)", "parcelport", name)
+
+    # df3 = df[df.apply(lambda row:
+    #                   row["level"] == 7,
+    #                   axis=1)]
+    # plot(df3, "nnodes", "Time(s)", "parcelport", name + "-l7")
 
 
 if __name__ == "__main__":

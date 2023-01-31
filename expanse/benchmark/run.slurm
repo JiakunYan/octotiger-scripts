@@ -32,7 +32,7 @@ date
 echo "run $task with parcelport $pp nthreads ${nthreads}; max_level=${max_level} tag=${RUN_TAG}"
 
 if [ "$task" = "rs" ] ; then
-	srun ${SRUN_EXTRA_OPTION} octotiger \
+	srun ${SRUN_EXTRA_OPTION} numactl --interleave=all octotiger \
         --hpx:ini=hpx.stacks.use_guard_pages=0 \
         --hpx:ini=hpx.parcel.${pp}.priority=1000 \
         --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=8192 \
@@ -50,10 +50,13 @@ if [ "$task" = "rs" ] ; then
         --hydro_host_kernel_type=LEGACY \
         --amr_boundary_kernel_type=AMR_OPTIMIZED \
         --hpx:threads=${nthreads} \
-        --hpx:ini=hpx.parcel.lci.sendimm=1 \
+        --hpx:ini=hpx.parcel.lci.sendimm=0 \
         --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
-        --hpx:ini=hpx.parcel.lci.backlog_queue=1 \
-        --hpx:ini=hpx.parcel.lci.prg_thread_core=-1
+        --hpx:ini=hpx.parcel.lci.backlog_queue=0 \
+        --hpx:ini=hpx.parcel.lci.background_only_scheduler=1 \
+        --hpx:ini=hpx.parcel.lci.use_two_device=1 \
+        --hpx:ini=hpx.parcel.lci.prg_thread_core=-1 \
+        --hpx:ini=hpx.parcel.lci.numa_interleave=0
 elif [ "$task" = "dwd" ] ; then
   srun ${SRUN_EXTRA_OPTION} octotiger \
         --hpx:ini=hpx.stacks.use_guard_pages=0 \

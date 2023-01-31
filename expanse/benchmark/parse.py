@@ -7,7 +7,7 @@ import os,sys
 sys.path.append("../../include")
 from draw_simple import *
 
-name = "20230110-total"
+name = "20230130-all"
 input_path = "run/slurm_output.*"
 output_path = "data/"
 edge_filename = {
@@ -20,6 +20,7 @@ edge_run = {
 }
 edge_data = {
     "format": "Total: (\S+)",
+    # "format": "Computation: (\S+) \(\S+ %\)",
     "label": ["Time(s)"]
 }
 all_labels = edge_filename["label"] + edge_run["label"] + edge_data["label"]

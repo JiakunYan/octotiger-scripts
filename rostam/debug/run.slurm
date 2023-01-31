@@ -1,19 +1,18 @@
 #!/bin/bash
-#SBATCH --account=xpress_g
-#SBATCH --constraint=gpu
-#SBATCH --qos=regular
-#SBATCH --time=00:05:00
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=64
-#SBATCH --gpus-per-task=1
-#SBATCH --gpu-bind=map_gpu:0,1
+#SBATCH --partition=jenkins-compute
+#SBATCH --time=2:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=16
+#SBATCH --job-name=hpx-init
+#SBATCH --output=init/slurm_output.%x-o%j
+#SBATCH --error=init/slurm_error.%x-o%j
 
 module purge
 module load octotiger
 module load hpx/local
 module load lci/local
 
-OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/global/homes/j/jackyan/workspace/octotiger-scripts}
+OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/home/jiakun/workspace/octotiger-scripts}
 
 cd ${OCTO_SCRIPT_PATH}/data || exit 1
 task=${1:-"rs"}

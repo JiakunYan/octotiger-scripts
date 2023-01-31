@@ -19,5 +19,8 @@ fi
 mkdir_s ./data
 cd data
 
-sbatch ${ROOT_PATH}/profile.slurm || { echo "sbatch error!"; exit 1; }
+#mode=${1:-"stat"}
+mode=${1:-"record"}
+
+sbatch ${ROOT_PATH}/profile.slurm $mode || { echo "sbatch error!"; exit 1; }
 cd ..
