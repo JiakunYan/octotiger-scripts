@@ -40,8 +40,11 @@ if [ "$pp" == "lci" ] ; then
 #  export MLX5_TOTAL_UUARS=256
 #  export MLX5_NUM_LOW_LAT_UUARS=240
 #  export LCI_IBV_ENABLE_EVENT_POLLING_THREAD=1
-#  nthreads=127
   SRUN_EXTRA_OPTION="${SRUN_EXTRA_OPTION} --mpi=pmi2"
+
+  export FI_CXI_RX_MATCH_MODE=software
+#  export FI_CXI_DEFAULT_CQ_SIZE=1310720
+#  export FI_MR_CACHE_MONITOR=memhooks
 #elif [ "$pp" == "mpi" ]; then
 #  SRUN_EXTRA_OPTION="${SRUN_EXTRA_OPTION} --mpi=pmix"
 fi
@@ -54,9 +57,10 @@ if [ "$task" = "rs" ] ; then
 	srun ${SRUN_EXTRA_OPTION} octotiger \
         --hpx:ini=hpx.stacks.use_guard_pages=0 \
         --hpx:ini=hpx.parcel.${pp}.priority=1000 \
+        --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=8192 \
         --config_file=${OCTO_SCRIPT_PATH}/data/rotating_star.ini \
         --max_level=${max_level} \
-        --stop_step=10 \
+        --stop_step=5 \
         --theta=0.34 \
         --correct_am_hydro=0 \
         --cuda_number_gpus=1 \
@@ -74,7 +78,7 @@ if [ "$task" = "rs" ] ; then
         --hpx:ini=hpx.parcel.lci.sendimm=1 \
         --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
         --hpx:ini=hpx.parcel.lci.backlog_queue=1 \
-        --hpx:ini=hpx.parcel.lci.try_lock_send=0 \
+        --hpx:ini=hpx.parcel.lci.use_two_device=1 \
         --hpx:ini=hpx.parcel.lci.prg_thread_core=-1
 elif [ "$task" = "dwd" ] ; then
   srun ${SRUN_EXTRA_OPTION} octotiger \

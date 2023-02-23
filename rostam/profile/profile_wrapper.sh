@@ -6,7 +6,7 @@ module load hpx/local-relWithDebInfo
 module load lci/local-relWithDebInfo
 
 
-OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/home/jackyan1/workspace/octotiger-scripts}
+OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/home/jiakun/workspace/octotiger-scripts}
 CURRENT_FILE_PATH=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd ${OCTO_SCRIPT_PATH}/data || exit 1
 task=${1:-"rs"}
@@ -14,7 +14,7 @@ pp=${2:-"lci"}
 max_level=${3:-"6"}
 mode=${4:-"stat"}
 
-nthreads=128
+nthreads=40
 if [ "$pp" == "lci" ] ; then
 #  export LCI_PACKET_RETURN_THRESHOLD=0
 #  export LCM_LOG_LEVEL=info
@@ -33,7 +33,7 @@ if [ "$mode" == "record" ] ; then
       numactl --interleave=all octotiger \
               --hpx:ini=hpx.stacks.use_guard_pages=0 \
               --hpx:ini=hpx.parcel.${pp}.priority=1000 \
-              --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=65536 \
+              --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=8192 \
               --config_file=${OCTO_SCRIPT_PATH}/data/rotating_star.ini \
               --max_level=${max_level} \
               --stop_step=5 \
@@ -50,8 +50,8 @@ if [ "$mode" == "record" ] ; then
               --hpx:threads=${nthreads} \
               --hpx:ini=hpx.parcel.lci.sendimm=1 \
               --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
-              --hpx:ini=hpx.parcel.lci.backlog_queue=1 \
-              --hpx:ini=hpx.parcel.lci.use_two_device=0 \
+              --hpx:ini=hpx.parcel.lci.backlog_queue=0 \
+              --hpx:ini=hpx.parcel.lci.use_two_device=1 \
               --hpx:ini=hpx.parcel.lci.prg_thread_core=-1
 
   mv ${OCTO_SCRIPT_PATH}/data/perf.data.$SLURM_JOB_ID.$SLURM_PROCID ${CURRENT_FILE_PATH}/data

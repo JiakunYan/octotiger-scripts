@@ -7,7 +7,7 @@ import os,sys
 sys.path.append("../../include")
 from draw_simple import *
 
-name = "20230211-wamta23"
+name = "20230206-all"
 input_path = "run/slurm_output.*"
 output_path = "data/"
 edge_filename = {

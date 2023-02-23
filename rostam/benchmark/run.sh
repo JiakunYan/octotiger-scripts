@@ -11,11 +11,11 @@ export OCTO_SCRIPT_PATH
 export RUN_TAG=${RUN_TAG:-default}
 
 tasks=("rs")
-max_levels=("6")
-#nnodes=(2 4 8 16 32)
-#pps=("lci" "mpi")
-nnodes=(32)
+max_levels=("5")
+nnodes=(8)
 pps=("lci")
+#nnodes=(1)
+#pps=("mpi")
 
 # create the ./log directory
 mkdir_s ./run
