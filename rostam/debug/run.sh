@@ -12,14 +12,14 @@ export RUN_TAG=${RUN_TAG:-default}
 
 # get the root path via environment variable or default value
 tasks=("rs")
-max_levels=("5")
+max_levels=("6")
 nnodes=(8)
-pps=("lci")
+pps=("lci" "mpi")
 
 # create the ./run directory
 mkdir_s ./run
 
-for i in $(eval echo {1..${1:-1}}); do
+for j in $(eval echo {1..${1:-1}}); do
   for i in "${!tasks[@]}"; do
     t=${tasks[i]}
     max_level=${max_levels[i]}

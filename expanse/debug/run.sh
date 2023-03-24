@@ -17,7 +17,7 @@ pps=("lci")
 # create the ./log directory
 mkdir_s ./run
 
-for i in $(eval echo {1..${1:-1}}); do
+for j in $(eval echo {1..${1:-1}}); do
   for i in "${!tasks[@]}"; do
     t=${tasks[i]}
     max_level=${max_levels[i]}
