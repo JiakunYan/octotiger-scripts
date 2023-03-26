@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=00:05:00
+#SBATCH --time=00:15:00
 #SBATCH --ntasks-per-node=1
 
 module purge
@@ -36,12 +36,12 @@ if [ "$task" = "rs" ] ; then
         --theta=0.34 \
         --correct_am_hydro=0 \
         --disable_output=on \
-        --monopole_host_kernel_type=LEGACY \
-        --multipole_host_kernel_type=LEGACY \
+        --monopole_host_kernel_type=KOKKOS \
+        --multipole_host_kernel_type=KOKKOS \
+        --hydro_host_kernel_type=KOKKOS \
         --monopole_device_kernel_type=OFF \
         --multipole_device_kernel_type=OFF \
         --hydro_device_kernel_type=OFF \
-        --hydro_host_kernel_type=LEGACY \
         --amr_boundary_kernel_type=AMR_OPTIMIZED \
         --hpx:ini=hpx.parcel.lci.sendimm=1 \
         --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \

@@ -11,8 +11,8 @@ export OCTO_SCRIPT_PATH
 
 # get the root path via environment variable or default value
 tasks=("rs")
-max_levels=("5")
-nnodes=(64 128)
+max_levels=("6")
+nnodes=(32 64)
 pps=("lci" "mpi")
 
 # create the ./run directory

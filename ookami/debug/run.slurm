@@ -4,8 +4,7 @@
 
 module purge
 module load octotiger
-module load hpx/local
-module load lci/local
+#module switch --force lci lci/local-release-pcounter
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/global/homes/j/jackyan/workspace/octotiger-scripts}
 
@@ -15,6 +14,9 @@ pp=${2:-"lci"}
 max_level=${3:-"3"}
 
 if [ "$pp" == "lci" ] ; then
+#  export LCI_PM_BACKEND_LOG=ON
+#  export LCM_LOG_LEVEL=info
+#  export LCI_ENABLE_MONITOR_THREAD=1
   export LCI_SERVER_MAX_SENDS=256
   export LCI_SERVER_MAX_RECVS=4096
   export LCI_SERVER_NUM_PKTS=65536
@@ -26,7 +28,7 @@ date
 echo "run $task with parcelport $pp; max_level=${max_level}"
 
 if [ "$task" = "rs" ] ; then
-	srun ${SRUN_EXTRA_OPTION} octotiger \
+	srun --mpi=pmix numactl --interleave=all octotiger \
         --hpx:ini=hpx.stacks.use_guard_pages=0 \
         --hpx:ini=hpx.parcel.${pp}.priority=1000 \
         --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=8192 \
@@ -36,12 +38,12 @@ if [ "$task" = "rs" ] ; then
         --theta=0.34 \
         --correct_am_hydro=0 \
         --disable_output=on \
-        --monopole_host_kernel_type=LEGACY \
-        --multipole_host_kernel_type=LEGACY \
+        --monopole_host_kernel_type=KOKKOS \
+        --multipole_host_kernel_type=KOKKOS \
+        --hydro_host_kernel_type=KOKKOS \
         --monopole_device_kernel_type=OFF \
         --multipole_device_kernel_type=OFF \
         --hydro_device_kernel_type=OFF \
-        --hydro_host_kernel_type=LEGACY \
         --amr_boundary_kernel_type=AMR_OPTIMIZED \
         --hpx:ini=hpx.parcel.lci.sendimm=1 \
         --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
