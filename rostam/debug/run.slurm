@@ -6,8 +6,8 @@
 
 module purge
 module load octotiger
-module load hpx/local
-module load lci/local-release-pcounter
+#module load hpx/local
+#module load lci/local-release-pcounter
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/home/jiakun/workspace/octotiger-scripts}
 
@@ -22,12 +22,12 @@ if [ "$pp" == "lci" ] ; then
 #  export LCI_IBV_USE_ODP=1
 #  export LCI_TOUCH_LBUFFER=0
 #  export LCI_IBV_USE_PREFETCH=0
-  export LCM_LOG_LEVEL=trace
-  export LCM_LOG_WHITELIST="monitor"
+#  export LCM_LOG_LEVEL=trace
+#  export LCM_LOG_WHITELIST="monitor"
 #  export LCM_LOG_WHITELIST="server;device;bq;monitor;env"
 #  export LCM_LOG_OUTFILE=$LOG_OUTPUT_PATH/debug.$SLURM_JOB_ID.%.log
 #  export LCM_LOG_OUTFILE=stderr
-  export LCM_LOG_LEVEL=info
+#  export LCM_LOG_LEVEL=info
 #  export LCI_ENABLE_MONITOR_THREAD=1
   export LCI_SERVER_MAX_SENDS=1024
   export LCI_SERVER_MAX_RECVS=4096
@@ -37,9 +37,6 @@ if [ "$pp" == "lci" ] ; then
 #  export MLX5_TOTAL_UUARS=256
 #  export MLX5_NUM_LOW_LAT_UUARS=240
 #  export LCI_IBV_ENABLE_EVENT_POLLING_THREAD=1
-  SRUN_EXTRA_OPTION="${SRUN_EXTRA_OPTION} --mpi=pmi2"
-#elif [ "$pp" == "mpi" ]; then
-#  SRUN_EXTRA_OPTION="${SRUN_EXTRA_OPTION} --mpi=pmix"
 fi
 
 # Run the job
@@ -65,6 +62,7 @@ if [ "$task" = "rs" ] ; then
         --hydro_host_kernel_type=LEGACY \
         --amr_boundary_kernel_type=AMR_OPTIMIZED \
         --hpx:threads=${nthreads} \
+        --hpx:ini=hpx.parcel.lci.protocol=putva \
         --hpx:ini=hpx.parcel.lci.sendimm=1 \
         --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
         --hpx:ini=hpx.parcel.lci.backlog_queue=0 \

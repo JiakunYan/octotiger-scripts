@@ -1,16 +1,16 @@
 #!/bin/bash
 #SBATCH --account=uic193
 #SBATCH --partition=compute
-#SBATCH --time=00:01:00
+#SBATCH --time=00:05:00
 #SBATCH --ntasks-per-node=1
 
 module purge
 module load octotiger/master
 module load hpx/local
-#module load hpx/local
-module load lci/local
+#module load hpx/local-debug
+#module load lci/local-debug
 #module load lci/local-release-pcounter
-module load papi/7.0.0
+#module load papi/7.0.0
 module list
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/home/jackyan1/workspace/octotiger-scripts}
@@ -27,11 +27,11 @@ nthreads=128
 if [ "$pp" == "lci" ] ; then
 #  export LCI_PACKET_RETURN_THRESHOLD=0
 #  export LCI_IBV_USE_ODP=1
-  export LCI_TOUCH_LBUFFER=0
-  export LCI_USE_DREG=1
+#  export LCI_TOUCH_LBUFFER=0
+#  export LCI_USE_DREG=1
 #  export LCI_IBV_USE_PREFETCH=0
-#  export LCM_LOG_LEVEL=trace
-  export LCM_LOG_WHITELIST="papi"
+#  export LCM_LOG_LEVEL=info
+#  export LCM_LOG_WHITELIST="papi"
 #  export LCM_LOG_OUTFILE=$LOG_OUTPUT_PATH/debug.$SLURM_JOB_ID.%.log
 #  export LCM_LOG_OUTFILE=stderr
 #  export LCI_ENABLE_MONITOR_THREAD=1
@@ -40,15 +40,14 @@ if [ "$pp" == "lci" ] ; then
   export LCI_SERVER_MAX_RECVS=4096
   export LCI_SERVER_NUM_PKTS=65536
   export LCI_SERVER_MAX_CQES=8192
-  export LCI_SEND_SLOW_DOWN_USEC=0
-  export LCI_RECV_SLOW_DOWN_USEC=0
+#  export LCI_PACKET_SIZE=65536
 #  export LCI_PAPI_EVENTS="DATA_CACHE_REFILLS_FROM_SYSTEM:LS_MABRESP_RMT_DRAM:LS_MABRESP_LCL_DRAM;DATA_CACHE_REFILLS_FROM_SYSTEM:LS_MABRESP_RMT_CACHE:LS_MABRESP_LCL_CACHE;DATA_CACHE_REFILLS_FROM_SYSTEM:MABRESP_LCL_L2;DATA_CACHE_REFILLS_FROM_SYSTEM:LS_MABRESP_RMT_CACHE:LS_MABRESP_RMT_DRAM;DATA_CACHE_REFILLS_FROM_SYSTEM:LS_MABRESP_LCL_CACHE:LS_MABRESP_LCL_DRAM"
 #  export MLX5_TOTAL_UUARS=256
 #  export MLX5_NUM_LOW_LAT_UUARS=240
 #  export LCI_IBV_ENABLE_EVENT_POLLING_THREAD=1
 #  nthreads=126
   SRUN_EXTRA_OPTION="${SRUN_EXTRA_OPTION} --mpi=pmi2"
-elif [ "$pp" == "mpi" ]; then
+elif [ "$pp" == "mpi" ] ; then
   SRUN_EXTRA_OPTION="${SRUN_EXTRA_OPTION} --mpi=pmix"
 fi
 
@@ -58,9 +57,9 @@ echo "run $task with parcelport $pp nthreads ${nthreads}; max_level=${max_level}
 
 #numactl --show
 #lstopo
-numastat
-grep "_kswapd" /proc/vmstat
-grep "_direct" /proc/vmstat
+#numastat
+#grep "_kswapd" /proc/vmstat
+#grep "_direct" /proc/vmstat
 if [ "$task" = "rs" ] ; then
 	srun ${SRUN_EXTRA_OPTION} numactl --interleave=all octotiger \
         --hpx:ini=hpx.stacks.use_guard_pages=0 \
@@ -80,10 +79,11 @@ if [ "$task" = "rs" ] ; then
         --hydro_host_kernel_type=LEGACY \
         --amr_boundary_kernel_type=AMR_OPTIMIZED \
         --hpx:threads=${nthreads} \
+        --hpx:ini=hpx.parcel.lci.protocol=sendrecv \
         --hpx:ini=hpx.parcel.lci.sendimm=1 \
         --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
-        --hpx:ini=hpx.parcel.lci.backlog_queue=1 \
-        --hpx:ini=hpx.parcel.lci.use_two_device=1 \
+        --hpx:ini=hpx.parcel.lci.backlog_queue=0 \
+        --hpx:ini=hpx.parcel.lci.use_two_device=0 \
         --hpx:ini=hpx.parcel.lci.prg_thread_core=-1
 #        --hpx:ini=hpx.parcel.lci.numa_interleave=0
 #        --hpx:print-counter="/*/*/${pp}/*" \
@@ -138,6 +138,6 @@ elif [ "$task" = "hy" ] ; then
         --amr_boundary_kernel_type=AMR_OPTIMIZED \
         --hpx:threads=${nthreads}
 fi
-numastat
-grep "_kswapd" /proc/vmstat
-grep "_direct" /proc/vmstat
+#numastat
+#grep "_kswapd" /proc/vmstat
+#grep "_direct" /proc/vmstat

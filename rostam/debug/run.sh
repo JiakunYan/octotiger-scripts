@@ -14,7 +14,7 @@ export RUN_TAG=${RUN_TAG:-default}
 tasks=("rs")
 max_levels=("6")
 nnodes=(8)
-pps=("lci" "mpi")
+pps=("lci")
 
 # create the ./run directory
 mkdir_s ./run

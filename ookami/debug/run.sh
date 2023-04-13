@@ -8,11 +8,12 @@ source ../../include/scripts.sh
 CURRENT_SCRIPT_PATH=$(realpath "$(dirname "$0")")
 OCTO_SCRIPT_PATH=$(realpath "${CURRENT_SCRIPT_PATH}/../..")
 export OCTO_SCRIPT_PATH
+RUN_TAG=${RUN_TAG:-default}
 
 # get the root path via environment variable or default value
 tasks=("rs")
-max_levels=("6")
-nnodes=(32 64)
+max_levels=("5")
+nnodes=(32)
 pps=("lci" "mpi")
 
 # create the ./run directory
@@ -41,8 +42,8 @@ for j in $(eval echo {1..${1:-1}}); do
         sbatch --nodes=$n \
                --job-name=$name \
                --partition=$queue \
-               --output=./run/slurm_output.%x.j%j.out \
-               --error=./run/slurm_output.%x.j%j.out \
+               --output=./run/slurm_output.%x.${RUN_TAG}.j%j.out \
+               --error=./run/slurm_output.%x.${RUN_TAG}.j%j.out \
                run.slurm $t $p $max_level || { echo "sbatch error!"; exit 1; }
       done
     done

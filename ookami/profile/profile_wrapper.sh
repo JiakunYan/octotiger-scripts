@@ -5,8 +5,8 @@ module load octotiger/reconstruct_simd_optimization-relWithDebInfo-kokkos
 module switch -f hpx hpx/local-relWithDebInfo
 module switch -f lci lci/local-relWithDebInfo
 
-OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/home/jackyan1/workspace/octotiger-scripts}
 CURRENT_FILE_PATH=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-${CURRENT_FILE_PATH}/../../}
 cd ${OCTO_SCRIPT_PATH}/data || exit 1
 task=${1:-"rs"}
 pp=${2:-"lci"}

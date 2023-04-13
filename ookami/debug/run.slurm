@@ -1,10 +1,11 @@
 #!/bin/bash
-#SBATCH --time=00:05:00
+#SBATCH --time=00:15:00
 #SBATCH --ntasks-per-node=1
 
 module purge
 module load octotiger
 #module switch --force lci lci/local-release-pcounter
+#module switch --force lci lci/local-debug
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/global/homes/j/jackyan/workspace/octotiger-scripts}
 
@@ -19,16 +20,23 @@ if [ "$pp" == "lci" ] ; then
 #  export LCI_ENABLE_MONITOR_THREAD=1
   export LCI_SERVER_MAX_SENDS=256
   export LCI_SERVER_MAX_RECVS=4096
+  export LCI_PACKET_SIZE=12288
   export LCI_SERVER_NUM_PKTS=65536
   export LCI_SERVER_MAX_CQES=8192
 fi
+SRUN_EXTRA_OPTION="--mpi=pmix"
 
+#while true; do
+#  free -g
+#  sleep 1
+#done &
 # Run the job
 date
 echo "run $task with parcelport $pp; max_level=${max_level}"
+which octotiger
 
 if [ "$task" = "rs" ] ; then
-	srun --mpi=pmix numactl --interleave=all octotiger \
+	srun ${SRUN_EXTRA_OPTION} octotiger \
         --hpx:ini=hpx.stacks.use_guard_pages=0 \
         --hpx:ini=hpx.parcel.${pp}.priority=1000 \
         --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=8192 \
@@ -48,8 +56,11 @@ if [ "$task" = "rs" ] ; then
         --hpx:ini=hpx.parcel.lci.sendimm=1 \
         --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
         --hpx:ini=hpx.parcel.lci.backlog_queue=0 \
-        --hpx:ini=hpx.parcel.lci.use_two_device=1 \
+        --hpx:ini=hpx.parcel.lci.use_two_device=0 \
         --hpx:ini=hpx.parcel.lci.prg_thread_core=-1
+#        --monopole_host_kernel_type=KOKKOS \
+#        --multipole_host_kernel_type=KOKKOS \
+#        --hydro_host_kernel_type=KOKKOS \
 elif [ "$task" = "dwd" ] ; then
   srun ${SRUN_EXTRA_OPTION} octotiger \
         --hpx:ini=hpx.stacks.use_guard_pages=0 \
