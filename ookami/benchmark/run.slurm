@@ -17,6 +17,7 @@ if [ "$pp" == "lci" ] ; then
   export LCI_SERVER_MAX_RECVS=4096
   export LCI_SERVER_NUM_PKTS=65536
   export LCI_SERVER_MAX_CQES=8192
+  export LCI_PACKET_SIZE=12288
 fi
 SRUN_EXTRA_OPTION="--mpi=pmix"
 

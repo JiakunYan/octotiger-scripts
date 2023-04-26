@@ -12,7 +12,7 @@ export RUN_TAG=${RUN_TAG:-default}
 
 # get the root path via environment variable or default value
 tasks=("rs")
-max_levels=("6")
+max_levels=("5")
 nnodes=(8)
 pps=("lci")
 

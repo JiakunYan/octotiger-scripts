@@ -12,11 +12,15 @@ RUN_TAG=${RUN_TAG:-default}
 
 # get the root path via environment variable or default value
 tasks=("rs")
-nnodes=(2 4 8 16 32)
-max_levels=("5")
+#nnodes=(32 64 128)
+#max_levels=("8")
 #nnodes=(16 32 64 128)
+#max_levels=("7")
+#nnodes=(2 4 8 16 32 64 128)
 #max_levels=("6")
-pps=("mpi" "lci")
+nnodes=(2 4 8 16 32 64 128)
+max_levels=("5")
+pps=("lci")
 
 # create the ./run directory
 mkdir_s ./run

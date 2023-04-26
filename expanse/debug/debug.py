@@ -1,4 +1,5 @@
 import re
+import sys
 
 filename = "debug/full4.log"
 pattern_send_start = r"send connection \((\d+), (\d+), (\d+).* start!"
@@ -15,6 +16,11 @@ def parse_tuple(line, pattern):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+
+    print("Process file " + filename)
+
     with open(filename, "r") as file:
         lines = file.readlines()
 

@@ -5,8 +5,8 @@ sys.path.append("../../include")
 from draw_simple import *
 import numpy as np
 
-job_tag = "first"
-name = "20230330-" + job_tag
+job_tag = "cache256"
+name = "20230422-" + job_tag
 input_path = "data/"
 all_labels = ["nnodes", "job", "parcelport", "nthreads", "level", "tag", "Time(s)"]
 
@@ -76,7 +76,8 @@ def batch(df):
 
     df1_tmp = df[df.apply(lambda row:
                           row["nnodes"] >= 2 and
-                          row["tag"] in ["default"],
+                          row["tag"] in ["default"] and
+                          row["level"] < 8,
                           axis=1)]
     df1 = df1_tmp.copy()
     df1["parcelport-level"] = df1_tmp["parcelport"] + "-" + df1_tmp["level"].astype(str)

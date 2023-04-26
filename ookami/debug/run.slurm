@@ -16,7 +16,7 @@ max_level=${3:-"3"}
 
 if [ "$pp" == "lci" ] ; then
 #  export LCI_PM_BACKEND_LOG=ON
-#  export LCM_LOG_LEVEL=info
+#  export LCM_LOG_LEVEL=debug
 #  export LCI_ENABLE_MONITOR_THREAD=1
   export LCI_SERVER_MAX_SENDS=256
   export LCI_SERVER_MAX_RECVS=4096

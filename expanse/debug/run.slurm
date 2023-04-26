@@ -5,12 +5,17 @@
 #SBATCH --ntasks-per-node=1
 
 module purge
-module load octotiger/master
+module load octotiger
+#module load octotiger/master-release-griddim6
 module load hpx/local
+#module load hpx/local-relWithDebInfo
 #module load hpx/local-debug
 #module load lci/local-debug
 #module load lci/local-release-pcounter
+module load lci/local-release-safeprog
+#module load lci/local-relWithDebInfo-safeprog
 #module load papi/7.0.0
+#module load libibverbs/local-debug
 module list
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/home/jackyan1/workspace/octotiger-scripts}
@@ -30,12 +35,13 @@ if [ "$pp" == "lci" ] ; then
 #  export LCI_TOUCH_LBUFFER=0
 #  export LCI_USE_DREG=1
 #  export LCI_IBV_USE_PREFETCH=0
-#  export LCM_LOG_LEVEL=info
+#  export LCM_LOG_LEVEL=debug
 #  export LCM_LOG_WHITELIST="papi"
 #  export LCM_LOG_OUTFILE=$LOG_OUTPUT_PATH/debug.$SLURM_JOB_ID.%.log
 #  export LCM_LOG_OUTFILE=stderr
-#  export LCI_ENABLE_MONITOR_THREAD=1
 #  export LCI_MONITOR_THREAD_INTERVAL=10
+#  export LCM_LOG_LEVEL=info
+#  export LCI_ENABLE_MONITOR_THREAD=1
   export LCI_SERVER_MAX_SENDS=256
   export LCI_SERVER_MAX_RECVS=4096
   export LCI_SERVER_NUM_PKTS=65536
@@ -79,12 +85,14 @@ if [ "$task" = "rs" ] ; then
         --hydro_host_kernel_type=LEGACY \
         --amr_boundary_kernel_type=AMR_OPTIMIZED \
         --hpx:threads=${nthreads} \
-        --hpx:ini=hpx.parcel.lci.protocol=sendrecv \
+        --hpx:ini=hpx.parcel.lci.protocol=putva \
+        --hpx:ini=hpx.parcel.lci.comp_type=queue \
+        --hpx:ini=hpx.parcel.lci.progress_type=worker \
         --hpx:ini=hpx.parcel.lci.sendimm=1 \
-        --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
         --hpx:ini=hpx.parcel.lci.backlog_queue=0 \
         --hpx:ini=hpx.parcel.lci.use_two_device=0 \
         --hpx:ini=hpx.parcel.lci.prg_thread_core=-1
+#        --hpx:ini=hpx.handle_signals=0
 #        --hpx:ini=hpx.parcel.lci.numa_interleave=0
 #        --hpx:print-counter="/*/*/${pp}/*" \
 #        --hpx:print-counter="/*/*/${pp}/*/*"
