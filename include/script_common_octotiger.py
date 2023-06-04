@@ -15,7 +15,6 @@ def get_default_config():
         "progress_type": "rp",
         "sendimm": 1,
         "backlog_queue": 0,
-        "use_two_device": 0,
         "prg_thread_core": -1,
         "prepost_recv_num": 1,
         "zero_copy_recv": 1,
@@ -39,31 +38,34 @@ def get_theta(config):
 
 def get_nthreads(config):
     platform_config = get_platform_config()
-    if config["parcelport"] == "lci" and config["progress_type"] == "pthread":
+    if config["parcelport"] == "lci" and "pthread" in config["progress_type"]:
         nthreads = platform_config["core_num"] - 1
     else:
         nthreads = platform_config["core_num"]
     return nthreads
 
 
-def get_environ_setting():
-    return {
+def get_environ_setting(config):
+    ret = {
         "LCI_SERVER_MAX_SENDS": "1024",
         "LCI_SERVER_MAX_RECVS": "4096",
         "LCI_SERVER_NUM_PKTS": "65536",
         "LCI_SERVER_MAX_CQES": "65536",
         "LCI_PACKET_SIZE": "12288",
     }
+    if "match_table_type" in config:
+        ret["LCI_MT_BACKEND"] = config["match_table_type"]
+    return ret
 
 
-def load_module(config, build_type = "release", enable_pcounter = False):
+def load_module(config, build_type = "release", enable_pcounter = False, extra=None):
     module = get_module()
     module("purge")
     if config["griddim"] == 8:
         if build_type == "release":
-            octotiger_to_load = "octotiger/master"
+            octotiger_to_load = "octotiger/local"
         else:
-            octotiger_to_load = "octotiger/master-" + build_type
+            octotiger_to_load = "octotiger/local-" + build_type
     else:
         octotiger_to_load = "octotiger/local-{}-griddim{}".format(build_type, config["griddim"])
     # Build type
@@ -73,7 +75,7 @@ def load_module(config, build_type = "release", enable_pcounter = False):
     if enable_pcounter:
         lci_to_load += "-pcounter"
     # Thread-safe progress function
-    if config["parcelport"] == "lci" and config["progress_type"] == "worker":
+    if config["parcelport"] == "lci" and "worker" in config["progress_type"]:
         lci_to_load += "-safeprog"
 
     if hpx_to_load == "hpx/local-release":
@@ -83,6 +85,9 @@ def load_module(config, build_type = "release", enable_pcounter = False):
     module("load", octotiger_to_load)
     module("load", hpx_to_load)
     module("load", lci_to_load)
+    if extra:
+        for t in extra:
+            module("load", t)
 
 
 def get_octotiger_cmd(root_path, config):
@@ -109,15 +114,13 @@ def get_octotiger_cmd(root_path, config):
 --hpx:ini=hpx.parcel.lci.progress_type={config["progress_type"]} \
 --hpx:ini=hpx.parcel.{config["parcelport"]}.sendimm={config["sendimm"]} \
 --hpx:ini=hpx.parcel.lci.backlog_queue={config["backlog_queue"]} \
---hpx:ini=hpx.parcel.lci.use_two_device={config["use_two_device"]} \
---hpx:ini=hpx.parcel.lci.prg_thread_core={config["prg_thread_core"]} \
 --hpx:ini=hpx.parcel.lci.prepost_recv_num={config["prepost_recv_num"]} \
 --hpx:ini=hpx.parcel.zero_copy_receive_optimization={config["zero_copy_recv"]}'''
     return cmd
 
 
 def run_octotiger(root_path, config, extra_arguments=""):
-    os.environ.update(get_environ_setting())
+    os.environ.update(get_environ_setting(config))
 
     if config["task"] == "rs":
         cmd = f'''

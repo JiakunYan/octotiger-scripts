@@ -16,8 +16,7 @@ current_path = get_current_script_path()
 root_path = os.path.realpath(os.path.join(current_path, "../.."))
 
 # load modules
-load_module(config, build_type="release", enable_pcounter=1)
+load_module(config, build_type="release", enable_pcounter=0)
 module_list()
 
-os.environ["LCM_LOG_LEVEL"] = "trace"
 run_octotiger(root_path, config)

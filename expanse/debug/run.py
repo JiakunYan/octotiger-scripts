@@ -9,22 +9,21 @@ sys.path.append("../../include")
 from script_common import *
 
 baseline = {
-    "name": "mpi",
+    "name": "lci",
     "nnodes_list": [32],
     "max_level": 6,
     "griddim": 8,
     "zc_threshold": 8192,
     "task": "rs",
-    "parcelport": "mpi",
+    "parcelport": "lci",
     "protocol": "sendrecv",
     "comp_type": "sync",
     "progress_type": "worker",
-    "sendimm": 0,
+    "sendimm": 1,
     "backlog_queue": 0,
-    "use_two_device": 0,
-    "prg_thread_core": -1,
     "prepost_recv_num": 1,
     "zero_copy_recv": 1,
+    "match_table_type": "hashqueue",
 }
 
 configs = [
@@ -32,11 +31,16 @@ configs = [
 ]
 
 if __name__ == "__main__":
+    n = 1
+    if len(sys.argv) > 1:
+        n = int(sys.argv[1])
+
     mkdir_s("./run")
 
     tag = getenv_or("RUN_TAG", "default")
     os.environ["CURRENT_SCRIPT_PATH"] = os.path.dirname(os.path.realpath(__file__))
-    for config in configs:
-        # print(config)
-        for nnodes in config["nnodes_list"]:
-            run_slurm(tag, nnodes, config, time = "2:00")
+    for i in range(n):
+        for config in configs:
+            # print(config)
+            for nnodes in config["nnodes_list"]:
+                run_slurm(tag, nnodes, config, time = "2:00")

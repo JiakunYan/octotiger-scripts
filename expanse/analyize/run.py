@@ -22,18 +22,16 @@ def run(tag, nnodes, config):
     os.system(command)
 
 baseline = {
-    "name": "lci_sendrecv_sync_worker_sendimm",
+    "name": "lci_putsendrecv_queue_worker_sendimm_l7_async",
     "nnodes_list": [32],
     "task": "rs",
     "parcelport": "lci",
-    "max_level": 6,
-    "protocol": "sendrecv",
-    "comp_type": "sync",
+    "max_level": 7,
+    "protocol": "putsendrecv",
+    "comp_type": "queue",
     "progress_type": "worker",
     "sendimm": 1,
     "backlog_queue": 0,
-    "use_two_device": 0,
-    "prg_thread_core": -1,
     "zero_copy_recv": 1,
 }
 

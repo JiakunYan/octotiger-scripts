@@ -18,8 +18,6 @@ default_config = {
     "progress_type": "rp",
     "sendimm": 1,
     "backlog_queue": 0,
-    "use_two_device": 0,
-    "prg_thread_core": -1
 }
 if len(sys.argv) > 1:
     config=json.loads(sys.argv[1])

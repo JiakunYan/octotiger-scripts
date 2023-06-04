@@ -21,8 +21,6 @@ baseline = {
     "progress_type": "worker",
     "sendimm": 1,
     "backlog_queue": 0,
-    "use_two_device": 0,
-    "prg_thread_core": -1,
     "prepost_recv_num": 1,
     "zero_copy_recv": 1,
 }

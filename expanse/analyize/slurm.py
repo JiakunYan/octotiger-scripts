@@ -30,6 +30,7 @@ module_list()
 # os.environ["LCM_LOG_LEVEL"] = "trace"
 extra_arguments = f'''\
 --hpx:ini=hpx.parcel.lci.log_level=profile \
---hpx:ini=hpx.parcel.lci.log_outfile={current_path}/run/octotiger_trace.{config["name"]}.%.log
+--hpx:ini=hpx.parcel.lci.log_outfile={current_path}/run/octotiger_trace.{config["name"]}.%.log \
+--enable_trace=1
 '''
 run_octotiger(root_path, config, extra_arguments=extra_arguments)
