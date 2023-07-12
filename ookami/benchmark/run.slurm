@@ -4,6 +4,7 @@
 
 module purge
 module load octotiger
+module load openmpi/gcc12.2.0/4.1.5
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/global/homes/j/jackyan/workspace/octotiger-scripts}
 
@@ -13,11 +14,12 @@ pp=${2:-"lci"}
 max_level=${3:-"3"}
 
 if [ "$pp" == "lci" ] ; then
-  export LCI_SERVER_MAX_SENDS=256
+  export LCI_SERVER_MAX_SENDS=1024
   export LCI_SERVER_MAX_RECVS=4096
   export LCI_SERVER_NUM_PKTS=65536
-  export LCI_SERVER_MAX_CQES=8192
+  export LCI_SERVER_MAX_CQES=65536
   export LCI_PACKET_SIZE=12288
+  export LCI_USE_DREG=0
 fi
 SRUN_EXTRA_OPTION="--mpi=pmix"
 
@@ -43,12 +45,7 @@ if [ "$task" = "rs" ] ; then
         --monopole_device_kernel_type=OFF \
         --multipole_device_kernel_type=OFF \
         --hydro_device_kernel_type=OFF \
-        --amr_boundary_kernel_type=AMR_OPTIMIZED \
-        --hpx:ini=hpx.parcel.lci.sendimm=1 \
-        --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
-        --hpx:ini=hpx.parcel.lci.backlog_queue=0 \
-        --hpx:ini=hpx.parcel.lci.use_two_device=0 \
-        --hpx:ini=hpx.parcel.lci.prg_thread_core=-1
+        --amr_boundary_kernel_type=AMR_OPTIMIZED
 elif [ "$task" = "dwd" ] ; then
   srun ${SRUN_EXTRA_OPTION} octotiger \
         --hpx:ini=hpx.stacks.use_guard_pages=0 \

@@ -5,8 +5,8 @@ import pandas as pd
 import os, sys
 import json
 
-job_tag = "all"
-job_name = "20230601-" + job_tag
+job_tag = "paper"
+job_name = "20230712-" + job_tag
 input_path = "data/"
 all_labels = ["nnodes", "name", "Total(s)", "Computation(s)", "Regrid(s)"]
 
@@ -59,11 +59,13 @@ def draw_bar(df, x_key, y_keys, title, x_include=None, color_map=None, filename=
             if y == 0:
                 continue
             ys.append(float(y))
-            errors.append(float(error))
+            if not np.isnan(error):
+                errors.append(float(error))
             if color_map:
                 colors.append(color_map[x])
         ys_dict[y_key] = ys
-        errors_dict[y_key] = errors
+        if len(errors) > 0:
+            errors_dict[y_key] = errors
         colors_dict[y_key] = colors
 
     fig, ax = plt.subplots(figsize=(10, len(xs) * 0.3 + 1))
@@ -72,9 +74,15 @@ def draw_bar(df, x_key, y_keys, title, x_include=None, color_map=None, filename=
     bar = None
     for y_key in y_keys:
         if colors_dict[y_key]:
-            bar = ax.barh(xs, ys_dict[y_key], xerr=errors_dict[y_key], color=colors_dict[y_key], edgecolor="black", left=bottom)
+            if len(errors_dict) > 0:
+                bar = ax.barh(xs, ys_dict[y_key], xerr=errors_dict[y_key], color=colors_dict[y_key], edgecolor="black", left=bottom)
+            else:
+                bar = ax.barh(xs, ys_dict[y_key], color=colors_dict[y_key], edgecolor="black", left=bottom)
         else:
-            bar = ax.barh(xs, ys_dict[y_key], xerr=errors_dict[y_key], edgecolor="black", left=bottom)
+            if len(errors_dict) > 0:
+                bar = ax.barh(xs, ys_dict[y_key], xerr=errors_dict[y_key], edgecolor="black", left=bottom)
+            else:
+                bar = ax.barh(xs, ys_dict[y_key], edgecolor="black", left=bottom)
         bottom += ys_dict[y_key]
 
     # Add actual number to the bar

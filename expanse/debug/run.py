@@ -16,18 +16,21 @@ baseline = {
     "zc_threshold": 8192,
     "task": "rs",
     "parcelport": "lci",
-    "protocol": "sendrecv",
-    "comp_type": "sync",
-    "progress_type": "worker",
+    "protocol": "putsendrecv",
+    "comp_type": "queue",
+    "progress_type": "rp",
     "sendimm": 1,
     "backlog_queue": 0,
     "prepost_recv_num": 1,
     "zero_copy_recv": 1,
     "match_table_type": "hashqueue",
+    "cq_type": "array_atomic_faa",
+    "reg_mem": 0
 }
 
 configs = [
     baseline,
+    # {**baseline, "name": "mpi", "parcelport": "mpi", "sendimm": 0}
 ]
 
 if __name__ == "__main__":

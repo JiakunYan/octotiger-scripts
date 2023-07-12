@@ -6,6 +6,8 @@ module purge
 module load octotiger
 #module switch --force lci lci/local-release-pcounter
 #module switch --force lci lci/local-debug
+module load openmpi/gcc12.2.0/4.1.5
+module list
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/global/homes/j/jackyan/workspace/octotiger-scripts}
 
@@ -23,8 +25,12 @@ if [ "$pp" == "lci" ] ; then
   export LCI_PACKET_SIZE=12288
   export LCI_SERVER_NUM_PKTS=65536
   export LCI_SERVER_MAX_CQES=8192
+  export LCI_PACKET_SIZE=12288
+  export LCI_USE_DREG=OFF
+  SRUN_EXTRA_OPTION="--mpi=pmi2"
+else
+  SRUN_EXTRA_OPTION="--mpi=pmix"
 fi
-SRUN_EXTRA_OPTION="--mpi=pmix"
 
 #while true; do
 #  free -g
@@ -53,11 +59,6 @@ if [ "$task" = "rs" ] ; then
         --multipole_device_kernel_type=OFF \
         --hydro_device_kernel_type=OFF \
         --amr_boundary_kernel_type=AMR_OPTIMIZED \
-        --hpx:ini=hpx.parcel.lci.sendimm=1 \
-        --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
-        --hpx:ini=hpx.parcel.lci.backlog_queue=0 \
-        --hpx:ini=hpx.parcel.lci.use_two_device=0 \
-        --hpx:ini=hpx.parcel.lci.prg_thread_core=-1
 #        --monopole_host_kernel_type=KOKKOS \
 #        --multipole_host_kernel_type=KOKKOS \
 #        --hydro_host_kernel_type=KOKKOS \

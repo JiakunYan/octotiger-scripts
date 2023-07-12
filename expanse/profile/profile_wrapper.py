@@ -19,6 +19,9 @@ root_path = os.path.realpath(os.path.join(current_path, "../.."))
 load_module(config, "relWithDebInfo")
 module_list()
 
+os.environ.update(get_environ_setting(config))
+os.environ["LCI_USE_DREG"] = "0"
+
 perf_output = f'perf.data.{os.environ["SLURM_JOB_ID"]}.{os.environ["SLURM_PROCID"]}'
 cmd = f'''
 cd {root_path}/data || exit 1

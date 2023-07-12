@@ -12,6 +12,22 @@ def rm(dir):
     except OSError as e:
         print(f"Error: {dir} : {e.strerror}")
 
+def mv(source, destination):
+    try:
+        source_files = glob.glob(source)
+        for file in source_files:
+            destination_filename = destination
+            if os.path.isdir(destination_filename):
+                destination_filename = os.path.join(destination_filename, os.path.basename(file))
+            shutil.move(file, destination_filename)
+            print(f"Moved '{file}' to '{destination_filename}'")
+    except FileNotFoundError:
+        print(f"Error: '{source}' does not exist.")
+    except PermissionError:
+        print(f"Error: Permission denied while moving '{source}'.")
+    except shutil.Error as e:
+        print(f"Error: Failed to move '{source}' to '{destination}': {e}")
+
 def mkdir_s(dir):
     if os.path.exists(dir):
         prompt = "{} directory exists. Are you sure to remove it | continue with it | or abort? [r|c|A]".format(dir)

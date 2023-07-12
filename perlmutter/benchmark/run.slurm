@@ -23,7 +23,7 @@ if [ "$pp" == "lci" ] ; then
 #  export LCI_PACKET_RETURN_THRESHOLD=0
 #  export LCI_IBV_USE_ODP=1
 #  export LCI_TOUCH_LBUFFER=0
-  export LCI_USE_DREG=1
+  export LCI_USE_DREG=0
 #  export LCI_IBV_USE_PREFETCH=0
 #  export LCM_LOG_LEVEL=debug
 #  export LCM_LOG_WHITELIST="server;device;bq;monitor;env"

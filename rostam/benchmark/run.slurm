@@ -20,7 +20,7 @@ if [ "$pp" == "lci" ] ; then
   export LCI_SERVER_MAX_RECVS=4096
   export LCI_SERVER_NUM_PKTS=65536
   export LCI_SERVER_MAX_CQES=65536
-  export LCI_USE_DREG=1
+  export LCI_USE_DREG=0
 #  nthreads=127
   SRUN_EXTRA_OPTION="${SRUN_EXTRA_OPTION} --mpi=pmi2"
 elif [ "$pp" == "mpi" ]; then
@@ -49,12 +49,7 @@ if [ "$task" = "rs" ] ; then
         --hydro_device_kernel_type=OFF \
         --hydro_host_kernel_type=LEGACY \
         --amr_boundary_kernel_type=AMR_OPTIMIZED \
-        --hpx:threads=${nthreads} \
-        --hpx:ini=hpx.parcel.lci.sendimm=1 \
-        --hpx:ini=hpx.parcel.lci.rp_prg_pool=1 \
-        --hpx:ini=hpx.parcel.lci.backlog_queue=0 \
-        --hpx:ini=hpx.parcel.lci.use_two_device=1 \
-        --hpx:ini=hpx.parcel.lci.prg_thread_core=-1
+        --hpx:threads=${nthreads}
 elif [ "$task" = "dwd" ] ; then
   srun ${SRUN_EXTRA_OPTION} octotiger \
         --hpx:ini=hpx.stacks.use_guard_pages=0 \

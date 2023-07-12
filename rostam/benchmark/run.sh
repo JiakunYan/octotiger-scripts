@@ -13,9 +13,9 @@ export RUN_TAG=${RUN_TAG:-default}
 tasks=("rs")
 max_levels=("5")
 nnodes=(8)
-pps=("lci")
+#pps=("lci")
 #nnodes=(1)
-#pps=("mpi")
+pps=("mpi")
 
 # create the ./log directory
 mkdir_s ./run

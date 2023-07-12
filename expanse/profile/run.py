@@ -16,13 +16,15 @@ baseline = {
     "task": "rs",
     "parcelport": "lci",
     "max_level": 6,
-    "protocol": "sendrecv",
+    "protocol": "putsendrecv",
     "comp_type": "queue",
-    "progress_type": "worker",
+    "progress_type": "rp",
     "sendimm": 1,
     "backlog_queue": 0,
     "prepost_recv_num": 1,
     "zero_copy_recv": 1,
+    "match_table_type": "hashqueue",
+    "cq_type": "array_atomic_cas"
 }
 
 configs = [

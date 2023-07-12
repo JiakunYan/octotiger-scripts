@@ -24,30 +24,34 @@ baseline = {
     "prepost_recv_num": 1,
     "zero_copy_recv": 1,
     "match_table_type": "hashqueue",
+    "cq_type": "array_atomic_faa",
+    "reg_mem": 1
 }
 
 configs = [
     # baseline,
-    # {**baseline, "name": "lci", "nnodes_list": [2, 4, 8, 16, 32]},
-    # {**baseline, "name": "mpi", "nnodes_list": [2, 4, 8, 16, 32], "parcelport": "mpi", "sendimm": 0},
-    {**baseline, "name": "mpi", "parcelport": "mpi", "sendimm": 0},
+    # {**baseline, "name": "lci", "nnodes_list": [2]},
+    {**baseline, "name": "lci", "nnodes_list": [2]},
+    {**baseline, "name": "mpi", "nnodes_list": [2], "parcelport": "mpi", "sendimm": 0},
+    {**baseline, "name": "mpi_sendimm", "nnodes_list": [2], "parcelport": "mpi", "sendimm": 1},
+    # {**baseline, "name": "mpi", "parcelport": "mpi", "sendimm": 0},
     # {**baseline, "name": "mpi_sendimm", "parcelport": "mpi", "sendimm": 1},
-    {**baseline, "name": "lci_sendrecv_sync_worker", "protocol": "sendrecv", "comp_type": "sync", "progress_type": "worker", "sendimm": 0},
-    {**baseline, "name": "lci_sendrecv_sync_rp", "protocol": "sendrecv", "comp_type": "sync", "sendimm": 0},
-    {**baseline, "name": "lci_sendrecv_queue_worker", "protocol": "sendrecv", "progress_type": "worker", "sendimm": 0},
-    {**baseline, "name": "lci_sendrecv_queue_rp", "protocol": "sendrecv", "sendimm": 0},
-    {**baseline, "name": "lci_putsendrecv_sync_worker", "comp_type": "sync", "progress_type": "worker", "sendimm": 0},
-    {**baseline, "name": "lci_putsendrecv_sync_rp", "comp_type": "sync", "sendimm": 0},
-    {**baseline, "name": "lci_putsendrecv_queue_worker", "progress_type": "worker", "sendimm": 0},
-    {**baseline, "name": "lci_putsendrecv_queue_rp", "sendimm": 0},
-    {**baseline, "name": "lci_sendrecv_sync_worker_sendimm", "protocol": "sendrecv", "comp_type": "sync", "progress_type": "worker"},
-    {**baseline, "name": "lci_sendrecv_sync_rp_sendimm", "protocol": "sendrecv", "comp_type": "sync"},
-    {**baseline, "name": "lci_sendrecv_queue_worker_sendimm", "protocol": "sendrecv", "progress_type": "worker"},
-    {**baseline, "name": "lci_sendrecv_queue_rp_sendimm", "protocol": "sendrecv"},
-    {**baseline, "name": "lci_putsendrecv_sync_worker_sendimm", "comp_type": "sync", "progress_type": "worker"},
-    {**baseline, "name": "lci_putsendrecv_sync_rp_sendimm", "comp_type": "sync"},
-    {**baseline, "name": "lci_putsendrecv_queue_worker_sendimm", "progress_type": "worker"},
-    {**baseline, "name": "lci_putsendrecv_queue_rp_sendimm"},
+    # {**baseline, "name": "lci_sendrecv_sync_worker", "protocol": "sendrecv", "comp_type": "sync", "progress_type": "worker", "sendimm": 0},
+    # {**baseline, "name": "lci_sendrecv_sync_rp", "protocol": "sendrecv", "comp_type": "sync", "sendimm": 0},
+    # {**baseline, "name": "lci_sendrecv_queue_worker", "protocol": "sendrecv", "progress_type": "worker", "sendimm": 0},
+    # {**baseline, "name": "lci_sendrecv_queue_rp", "protocol": "sendrecv", "sendimm": 0},
+    # {**baseline, "name": "lci_putsendrecv_sync_worker", "comp_type": "sync", "progress_type": "worker", "sendimm": 0},
+    # {**baseline, "name": "lci_putsendrecv_sync_rp", "comp_type": "sync", "sendimm": 0},
+    # {**baseline, "name": "lci_putsendrecv_queue_worker", "progress_type": "worker", "sendimm": 0},
+    # {**baseline, "name": "lci_putsendrecv_queue_rp", "sendimm": 0},
+    # {**baseline, "name": "lci_sendrecv_sync_worker_sendimm", "protocol": "sendrecv", "comp_type": "sync", "progress_type": "worker"},
+    # {**baseline, "name": "lci_sendrecv_sync_rp_sendimm", "protocol": "sendrecv", "comp_type": "sync"},
+    # {**baseline, "name": "lci_sendrecv_queue_worker_sendimm", "protocol": "sendrecv", "progress_type": "worker"},
+    # {**baseline, "name": "lci_sendrecv_queue_rp_sendimm", "protocol": "sendrecv"},
+    # {**baseline, "name": "lci_putsendrecv_sync_worker_sendimm", "comp_type": "sync", "progress_type": "worker"},
+    # {**baseline, "name": "lci_putsendrecv_sync_rp_sendimm", "comp_type": "sync"},
+    # {**baseline, "name": "lci_putsendrecv_queue_worker_sendimm", "progress_type": "worker"},
+    # {**baseline, "name": "lci_putsendrecv_queue_rp_sendimm"},
     # pthread
     # {**baseline, "name": "lci_sendrecv_sync_pthread", "protocol": "sendrecv", "comp_type": "sync", "progress_type": "pthread", "sendimm": 0},
     # {**baseline, "name": "lci_sendrecv_queue_pthread", "protocol": "sendrecv", "progress_type": "pthread", "sendimm": 0},
@@ -103,7 +107,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         n = int(sys.argv[1])
 
-    mkdir_s("./run")
+    mkdir_s("run")
 
     tag = getenv_or("RUN_TAG", "default")
     os.environ["CURRENT_SCRIPT_PATH"] = os.path.dirname(os.path.realpath(__file__))
@@ -111,4 +115,4 @@ if __name__ == "__main__":
         for config in configs:
             # print(config)
             for nnodes in config["nnodes_list"]:
-                run_slurm(tag, nnodes, config, time="00:01:00")
+                run_slurm(tag, nnodes, config, time="00:03:00")
