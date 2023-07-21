@@ -4,6 +4,7 @@ import shutil
 import copy
 import glob
 import json
+from platform_config_common import *
 
 def rm(dir):
     try:
@@ -58,14 +59,17 @@ def get_current_script_path():
         return os.path.realpath(sys.argv[0])
 
 def get_module():
-    module_home = os.environ["MODULESHOME"]
-    module_init_file_path = os.path.join(module_home, "init", "*.py")
-    init_files = glob.glob(module_init_file_path)
-    if len(init_files) != 1:
-        print("Cannot find init file {}".format(init_files))
-    print("Load init file {}".format(init_files[0]))
-    dir_name = os.path.dirname(init_files[0])
-    file_name = os.path.basename(init_files[0])
+    init_file = get_platform_config("module_init_file")
+    if init_file is None:
+        module_home = os.environ["MODULESHOME"]
+        module_init_file_path = os.path.join(module_home, "init", "*.py")
+        init_files = glob.glob(module_init_file_path)
+        if len(init_files) != 1:
+            print("Cannot find init file {}".format(init_files))
+        init_file = init_files[0]
+    print("Load init file {}".format(init_file))
+    dir_name = os.path.dirname(init_file)
+    file_name = os.path.basename(init_file)
     name = os.path.splitext(file_name)[0]
     if dir_name not in sys.path:
         sys.path.insert(0, dir_name)
@@ -75,19 +79,28 @@ def get_module():
 def module_list():
     os.system("module list")
 
-def run_slurm(tag, nnodes, config, time="00:05:00"):
-    job_name="n{}-{}".format(nnodes, config["name"])
+def run_slurm(tag, nnodes, config, time="00:05:00", name=None):
+    if name is None:
+        name = config["name"]
+    job_name="n{}-{}".format(nnodes, name)
     output_filename = "./run/slurm_output.{}.%x.j%j.out".format(tag)
+    account = get_platform_config("account")
+    partition = get_platform_config("partition")
+    platform_args = ""
+    if account:
+        platform_args += "--account={} ".format(account)
+    if partition:
+        platform_args += "--partition={} ".format(partition)
+
     command = f'''
     sbatch --export=ALL \
            --nodes={nnodes} \
            --job-name={job_name} \
            --output={output_filename} \
            --error={output_filename} \
-           --account=uic193 \
-           --partition=compute \
            --time={time} \
            --ntasks-per-node=1 \
+           {platform_args} \
            slurm.py '{json.dumps(config)}'
     '''
     os.system(command)

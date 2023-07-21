@@ -40,11 +40,11 @@ def get_theta(config):
 
 
 def get_nthreads(config):
-    platform_config = get_platform_config()
+    core_num = get_platform_config("core_num", required=True)
     if config["parcelport"] == "lci" and "pthread" in config["progress_type"]:
-        nthreads = platform_config["core_num"] - 1
+        nthreads = core_num - 1
     else:
-        nthreads = platform_config["core_num"]
+        nthreads = core_num
     return nthreads
 
 
@@ -69,13 +69,17 @@ def get_environ_setting(config):
 def load_module(config, build_type = "release", enable_pcounter = False, extra=None):
     module = get_module()
     module("purge")
+    octotiger_major = get_platform_config("octotiger_major")
+    if octotiger_major is None:
+        octotiger_major = "local"
+    octotiger_base = "octotiger/{}".format(octotiger_major)
     if config["griddim"] == 8:
         if build_type == "release":
-            octotiger_to_load = "octotiger/local"
+            octotiger_to_load = octotiger_base
         else:
-            octotiger_to_load = "octotiger/local-" + build_type
+            octotiger_to_load = octotiger_base + "-" + build_type
     else:
-        octotiger_to_load = "octotiger/local-{}-griddim{}".format(build_type, config["griddim"])
+        octotiger_to_load = octotiger_base + "-{}-griddim{}".format(build_type, config["griddim"])
     # Build type
     hpx_to_load = "hpx/local" + "-" + build_type
     lci_to_load = "lci/local" + "-" + build_type
@@ -131,11 +135,15 @@ def get_octotiger_cmd(root_path, config):
 
 def run_octotiger(root_path, config, extra_arguments=""):
     os.environ.update(get_environ_setting(config))
+    platform_config = get_platform_config_all()
+    numactl_cmd = ""
+    if platform_config["numa_policy"] == "interleave":
+        numactl_cmd = "numactl --interleave=all"
 
     if config["task"] == "rs":
         cmd = f'''
 cd {root_path}/data || exit 1
-srun {get_srun_pmi_option(config)} numactl --interleave=all {get_octotiger_cmd(root_path, config)} {extra_arguments}
+srun {get_srun_pmi_option(config)} {numactl_cmd} {get_octotiger_cmd(root_path, config)} {extra_arguments}
 '''
         print(cmd)
         sys.stdout.flush()

@@ -1,8 +1,8 @@
-def get_platform_config():
+def get_platform_config_all():
     return {
         "name": "perlmutter",
         "core_num": 64,
-        "best numa policy": "default",
+        "numa_policy": "default",
     }
 
 def get_srun_pmi_option(config):

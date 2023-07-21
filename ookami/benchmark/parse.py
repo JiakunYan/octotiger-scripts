@@ -7,7 +7,7 @@ import os,sys
 sys.path.append("../../include")
 from draw_simple import *
 
-name = "20230422-cache256"
+name = "20230713-all"
 input_path = "run/slurm_output.*"
 output_path = "data/"
 edge_filename = {

@@ -29,9 +29,20 @@ baseline = {
 }
 
 configs = [
-    baseline,
-    # {**baseline, "name": "mpi", "parcelport": "mpi", "sendimm": 0}
+    # baseline,
+    {**baseline, "name": "lci_psr_cq_pin", "sendimm": 0},
+    {**baseline, "name": "lci_sr_sy_mt_i", "protocol": "sendrecv", "comp_type": "sync", "progress_type": "worker"},
+    {**baseline, "name": "lci_sr_sy_pin_i", "protocol": "sendrecv", "comp_type": "sync"},
+    {**baseline, "name": "lci_sr_cq_mt_i", "protocol": "sendrecv", "progress_type": "worker"},
+    {**baseline, "name": "lci_sr_cq_pin_i", "protocol": "sendrecv"},
+    {**baseline, "name": "lci_psr_sy_mt_i", "comp_type": "sync", "progress_type": "worker"},
+    {**baseline, "name": "lci_psr_sy_pin_i", "comp_type": "sync"},
+    {**baseline, "name": "lci_psr_cq_mt_i", "progress_type": "worker"},
+    {**baseline, "name": "lci_psr_cq_pin_i"},
+    {**baseline, "name": "mpi", "parcelport": "mpi", "sendimm": 0},
+    {**baseline, "name": "mpi_i", "parcelport": "mpi", "sendimm": 1},
 ]
+run_as_one_job = True
 
 if __name__ == "__main__":
     n = 1
@@ -43,7 +54,11 @@ if __name__ == "__main__":
     tag = getenv_or("RUN_TAG", "default")
     os.environ["CURRENT_SCRIPT_PATH"] = os.path.dirname(os.path.realpath(__file__))
     for i in range(n):
-        for config in configs:
-            # print(config)
-            for nnodes in config["nnodes_list"]:
-                run_slurm(tag, nnodes, config, time = "2:00")
+        if run_as_one_job:
+            for nnodes in configs[0]["nnodes_list"]:
+                run_slurm(tag, nnodes, configs, name="all", time = "5:00")
+        else:
+            for config in configs:
+                # print(config)
+                for nnodes in config["nnodes_list"]:
+                    run_slurm(tag, nnodes, config, time = "2:00")

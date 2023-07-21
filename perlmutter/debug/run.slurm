@@ -2,7 +2,7 @@
 #SBATCH --account=xpress_g
 #SBATCH --constraint=gpu
 #SBATCH --qos=regular
-#SBATCH --time=00:05:00
+#SBATCH --time=00:01:00
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=64
 #SBATCH --gpus-per-task=4
@@ -14,6 +14,7 @@ module purge
 module load octotiger
 #module load hpx/local-release-pcounter
 #module load lci/local-release-pcounter
+module load lci/local-debug
 module list
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/global/homes/j/jackyan/workspace/octotiger-scripts}
@@ -24,12 +25,12 @@ pp=${2:-"lci"}
 max_level=${3:-"3"}
 
 if [ "$pp" == "lci" ] ; then
-  export LCI_LOG_LEVEL=info
+  export LCI_LOG_LEVEL=debug
   export LCI_SERVER_MAX_SENDS=256
   export LCI_SERVER_MAX_RECVS=4096
   export LCI_SERVER_NUM_PKTS=65536
   export LCI_SERVER_MAX_CQES=8192
-  export LCI_PACKET_SIZE=12288
+  export LCI_PACKET_SIZE=65536
 fi
 SRUN_EXTRA_OPTION=""
 export FI_CXI_RX_MATCH_MODE=software
@@ -68,7 +69,7 @@ if [ "$task" = "rs" ] ; then
 	srun ${SRUN_EXTRA_OPTION} octotiger \
         --hpx:ini=hpx.stacks.use_guard_pages!=0 \
         --hpx:ini=hpx.parcel.${pp}.priority=1000 \
-        --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=8192 \
+        --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=65536 \
         --config_file=${OCTO_SCRIPT_PATH}/data/rotating_star.ini \
         --max_level=${max_level} \
         --stop_step=5 \

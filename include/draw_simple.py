@@ -175,7 +175,7 @@ def parse_tag(df, x_key, y_key, tag_key):
         current_value = []
         current_error = []
         for x in df1[x_key].unique():
-            y = df1[df1[x_key] == x].median(numeric_only=True)[y_key]
+            y = df1[df1[x_key] == x].mean(numeric_only=True)[y_key]
             error = df1[df1[x_key] == x].std(numeric_only=True)[y_key]
             if y is np.nan:
                 continue

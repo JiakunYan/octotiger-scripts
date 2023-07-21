@@ -5,8 +5,8 @@ sys.path.append("../../include")
 from draw_simple import *
 import numpy as np
 
-job_tag = "cache256"
-name = "20230422-" + job_tag
+job_tag = "all"
+name = "20230713-" + job_tag
 input_path = "data/"
 all_labels = ["nnodes", "job", "parcelport", "nthreads", "level", "tag", "Time(s)"]
 
