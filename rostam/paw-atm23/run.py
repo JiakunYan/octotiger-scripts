@@ -29,9 +29,9 @@ baseline = {
 }
 
 configs = [
-    {**baseline, "name": "lci", "nnodes_list": [2, 4, 8, 15], "parcelport": "lci"},
-    {**baseline, "name": "mpi", "nnodes_list": [2, 4, 8, 15], "parcelport": "mpi", "sendimm": 0},
-    {**baseline, "name": "mpi_i", "nnodes_list": [2, 4, 8, 15], "parcelport": "mpi", "sendimm": 1},
+    {**baseline, "name": "lci", "nnodes_list": [2, 4, 8, 16], "parcelport": "lci"},
+    {**baseline, "name": "mpi", "nnodes_list": [2, 4, 8, 16], "parcelport": "mpi", "sendimm": 0},
+    {**baseline, "name": "mpi_i", "nnodes_list": [2, 4, 8, 16], "parcelport": "mpi", "sendimm": 1},
 ]
 
 if __name__ == "__main__":
