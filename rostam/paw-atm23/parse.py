@@ -8,7 +8,7 @@ import ast
 import pandas as pd
 import os,sys
 
-name = "20230712-paper"
+name = "paw-atm23-final"
 input_path = "run/slurm_output.*"
 output_path = "data/"
 filename_pattern = {
@@ -17,22 +17,22 @@ filename_pattern = {
 }
 
 line_patterns = [
-{
-    "format": "Config: (.+)",
-    "label": ["config"],
-},
-{
-    "format": "Total: (\S+)",
-    "label": ["Total(s)"]
-},
-{
-    "format": "Computation: (\S+) \(\S+ %\)",
-    "label": ["Computation(s)"]
-},
-{
-    "format": "^Regrid: (\S+) \(\S+ %\)",
-    "label": ["Regrid(s)"]
-}]
+    {
+        "format": "Config: (.+)",
+        "label": ["config"],
+    },
+    {
+        "format": "Total: (\S+)",
+        "label": ["Total(s)"]
+    },
+    {
+        "format": "Computation: (\S+) \(\S+ %\)",
+        "label": ["Computation(s)"]
+    },
+    {
+        "format": "^Regrid: (\S+) \(\S+ %\)",
+        "label": ["Regrid(s)"]
+    }]
 all_labels = [y for x in line_patterns for y in x["label"]]
 
 def get_typed_value(value):
@@ -93,7 +93,6 @@ if __name__ == "__main__":
 
     # df = df[all_labels]
     # df = df.sort_values(by=all_labels)
-
     if df.shape[0] == 0:
         print("Error! Get 0 entries!")
         exit(1)

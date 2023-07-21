@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import pandas as pd
 import os,sys, json
 from matplotlib import pyplot as plt
@@ -8,6 +10,7 @@ import numpy as np
 job_tag = "paper"
 job_name = "20230712-" + job_tag
 input_path = "data/"
+output_path = "draw/"
 all_labels = ["name", "nnodes", "max_level", "Total(s)", "Computation(s)", "Regrid(s)"]
 
 def plot(df, x_key, y_key, tag_key, title,
@@ -72,7 +75,10 @@ def plot(df, x_key, y_key, tag_key, title,
 
     if filename is None:
         filename = title
-    dirname = os.path.join("draw", job_name)
+
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+    dirname = os.path.join(output_path, job_name)
     if not os.path.exists(dirname):
         os.mkdir(dirname)
     output_png_name = os.path.join(dirname, "{}.png".format(filename))

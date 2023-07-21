@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import json
 import re
 import glob
@@ -5,8 +7,6 @@ import numpy as np
 import ast
 import pandas as pd
 import os,sys
-sys.path.append("../../include")
-from draw_simple import *
 
 name = "20230714-more"
 input_path = "run/slurm_output.*"
@@ -98,4 +98,7 @@ if __name__ == "__main__":
         exit(1)
     else:
         print("get {} entries".format(df.shape[0]))
+
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
     df.to_csv(os.path.join(output_path, "{}.csv".format(name)))

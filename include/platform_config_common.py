@@ -10,7 +10,7 @@ elif "HOSTNAME" in os.environ and "delta" in os.environ["HOSTNAME"] or \
         "SLURM_CLUSTER_NAME" in os.environ and os.environ["SLURM_CLUSTER_NAME"] == "delta":
     from platforms.platform_config_delta import *
 else:
-    print("Unknown plaform!")
+    print("Unknown platform!")
     exit(1)
 
 

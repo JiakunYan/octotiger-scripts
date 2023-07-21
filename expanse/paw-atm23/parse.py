@@ -8,7 +8,7 @@ import ast
 import pandas as pd
 import os,sys
 
-name = "20230712-paper"
+name = "paw-atm23-final"
 input_path = "run/slurm_output.*"
 output_path = "data/"
 filename_pattern = {
@@ -102,4 +102,5 @@ if __name__ == "__main__":
 
     if not os.path.exists(output_path):
         os.mkdir(output_path)
+
     df.to_csv(os.path.join(output_path, "{}.csv".format(name)))

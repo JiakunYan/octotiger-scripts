@@ -7,8 +7,8 @@ sys.path.append("../../include")
 from draw_simple import *
 import numpy as np
 
-job_tag = "paper"
-job_name = "20230712-" + job_tag
+job_tag = "final"
+job_name = "paw-atm23-" + job_tag
 input_path = "data/"
 output_path = "draw/"
 all_labels = ["name", "nnodes", "max_level", "Total(s)", "Computation(s)", "Regrid(s)"]
@@ -49,6 +49,8 @@ def plot(df, x_key, y_key, tag_key, title,
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     ax.set_title(title)
+    # ax.legend(bbox_to_anchor = (1.05, 0.6))
+    # ax.legend()
 
     # speedup
     ax2 = ax.twinx()
@@ -86,17 +88,14 @@ def plot(df, x_key, y_key, tag_key, title,
         json.dump({"Time": lines, "Speedup": speedup_lines}, outfile)
 
 def batch(df):
-
     df1_tmp = df[df.apply(lambda row:
-                          row["name"] in ["lci_l5", "mpi_i_l5", "mpi_l5"] and
-                          2 <= row["nnodes"] <= 15 and
-                          row["max_level"] == 5,
+                          row["name"] in ["lci", "mpi_sendimm", "mpi"] and
+                          row["nnodes"] >= 2,
                           axis=1)]
     df1 = df1_tmp.copy()
     label_dict = {
-        "lci_l5": "lci",
-        "mpi_i_l5": "mpi-i",
-        "mpi_l5": "mpi-a",
+        "mpi": "mpi-a",
+        "mpi_sendimm": "mpi-i"
     }
     def sort_key(x):
         ordering = {
@@ -105,7 +104,7 @@ def batch(df):
             "lci": 2,
         }
         return ordering[x["label"]]
-    plot(df1, "nnodes", "Total(s)", "name", "Octo-Tiger on Rostam", filename="brief",
+    plot(df1, "nnodes", "Total(s)", "name", "Octo-Tiger on SDSC Expanse", filename="brief",
          base="lci", with_error=True, label_dict=label_dict, sort_key=sort_key,
          x_label="Node Count", y_label="Time to Solution (s)")
 

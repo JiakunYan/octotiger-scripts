@@ -7,8 +7,8 @@ sys.path.append("../../include")
 from draw_simple import *
 import numpy as np
 
-job_tag = "paper"
-job_name = "20230712-" + job_tag
+job_tag = "final"
+job_name = "paw-atm23-" + job_tag
 input_path = "data/"
 output_path = "draw/"
 all_labels = ["name", "nnodes", "max_level", "Total(s)", "Computation(s)", "Regrid(s)"]
@@ -88,15 +88,14 @@ def plot(df, x_key, y_key, tag_key, title,
 def batch(df):
 
     df1_tmp = df[df.apply(lambda row:
-                          row["name"] in ["lci_l5", "mpi_i_l5", "mpi_l5"] and
                           2 <= row["nnodes"] <= 15 and
                           row["max_level"] == 5,
                           axis=1)]
     df1 = df1_tmp.copy()
     label_dict = {
-        "lci_l5": "lci",
-        "mpi_i_l5": "mpi-i",
-        "mpi_l5": "mpi-a",
+        "lci": "lci",
+        "mpi_i": "mpi-i",
+        "mpi": "mpi-a",
     }
     def sort_key(x):
         ordering = {
