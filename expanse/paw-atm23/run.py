@@ -31,7 +31,7 @@ baseline = {
 configs = [
     {**baseline, "name": "lci", "nnodes_list": [2, 4, 8, 16, 32]},
     {**baseline, "name": "mpi", "nnodes_list": [2, 4, 8, 16, 32], "parcelport": "mpi", "sendimm": 0},
-    {**baseline, "name": "mpi_sendimm", "nnodes_list": [2, 4, 8, 16, 32], "parcelport": "mpi", "sendimm": 1},
+    # {**baseline, "name": "mpi_sendimm", "nnodes_list": [32], "parcelport": "mpi", "sendimm": 1},
 ]
 run_as_one_job = False
 
@@ -47,9 +47,9 @@ if __name__ == "__main__":
     for i in range(n):
         if run_as_one_job:
             for nnodes in configs[0]["nnodes_list"]:
-                run_slurm(tag, nnodes, configs, name="all", time = "1:00")
+                run_slurm(tag, nnodes, configs, name="all", time = "3:00")
         else:
             for config in configs:
                 # print(config)
                 for nnodes in config["nnodes_list"]:
-                    run_slurm(tag, nnodes, config, time = "1:00")
+                    run_slurm(tag, nnodes, config, time = "3:00")

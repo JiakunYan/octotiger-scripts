@@ -62,6 +62,8 @@ def plot(df, x_key, y_key, tag_key, title,
     for line in lines:
         if line['label'] == baseline['label']:
             continue
+        if len(line["y"]) != len(baseline["y"]):
+            continue
         speedup = [float(x) / float(b) for x, b in zip(line["y"], baseline["y"])]
         speedup_lines.append({"label": line["label"], "x": line["x"], "y": speedup})
         ax2.plot(line["x"], speedup, label="{} / {}".format(line['label'], baseline['label']), marker='.', markerfacecolor='white', linestyle='dashed')
@@ -94,13 +96,13 @@ def batch(df):
                           axis=1)]
     df1 = df1_tmp.copy()
     label_dict = {
-        "mpi": "mpi-a",
-        "mpi_sendimm": "mpi-i"
+        "mpi": "mpi",
+        "mpi_sendimm": "mpi_i"
     }
     def sort_key(x):
         ordering = {
-            "mpi-i": 0,
-            "mpi-a": 1,
+            "mpi": 0,
+            "mpi_i": 1,
             "lci": 2,
         }
         return ordering[x["label"]]

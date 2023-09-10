@@ -20,7 +20,9 @@ def get_default_config():
         "zero_copy_recv": 1,
         "match_table_type": "hashqueue",
         "cq_type": "array_atomic_faa",
-        "reg_mem": 0
+        "reg_mem": 0,
+        "ndevices": 1,
+        "ncomps": 1
     }
     return default_config
 
@@ -31,7 +33,7 @@ def get_theta(config):
         theta = 0.34
     elif 3 <= griddim <= 4:
         theta = 0.51
-    elif griddim == 2:
+    elif 1 <= griddim <= 2:
         theta = 1.01
     else:
         print("invalid griddim {}!".format(griddim))
@@ -99,18 +101,39 @@ def load_module(config, build_type = "release", enable_pcounter = False, extra=N
     module("load", hpx_to_load)
     module("load", lci_to_load)
     if extra:
+        if type(extra) is not list:
+            extra = [extra]
         for t in extra:
             module("load", t)
 
 
 def get_octotiger_cmd(root_path, config):
+    prg_thread_num = 1
+    if "prg_thread_num" in config:
+        if config["prg_thread_num"] == "auto":
+            prg_thread_num = config["ndevices"]
+        else:
+            prg_thread_num = config["prg_thread_num"]
+
+    if config["task"] == "rs":
+        config_filename = "rotating_star.ini"
+    elif config["task"] == "gr":
+        config_filename = "sphere.ini"
+    else:
+        print("Unknown task!")
+        exit(1)
+
+    stop_step = 5
+    if "stop_step" in config:
+        stop_step = config["stop_step"]
+
     cmd = f'''octotiger \
 --hpx:ini=hpx.stacks.use_guard_pages=0 \
 --hpx:ini=hpx.parcel.{config["parcelport"]}.priority=1000 \
 --hpx:ini=hpx.parcel.{config["parcelport"]}.zero_copy_serialization_threshold={config["zc_threshold"]} \
---config_file={root_path}/data/rotating_star.ini \
+--config_file={root_path}/data/{config_filename} \
 --max_level={config["max_level"]} \
---stop_step=5 \
+--stop_step={stop_step} \
 --theta={get_theta(config)} \
 --correct_am_hydro=0 \
 --disable_output=on \
@@ -122,6 +145,7 @@ def get_octotiger_cmd(root_path, config):
 --hydro_host_kernel_type=LEGACY \
 --amr_boundary_kernel_type=AMR_OPTIMIZED \
 --hpx:threads={get_nthreads(config)} \
+--hpx:ini=hpx.agas.use_caching=0 \
 --hpx:ini=hpx.parcel.lci.protocol={config["protocol"]} \
 --hpx:ini=hpx.parcel.lci.comp_type={config["comp_type"]} \
 --hpx:ini=hpx.parcel.lci.progress_type={config["progress_type"]} \
@@ -129,7 +153,10 @@ def get_octotiger_cmd(root_path, config):
 --hpx:ini=hpx.parcel.lci.backlog_queue={config["backlog_queue"]} \
 --hpx:ini=hpx.parcel.lci.prepost_recv_num={config["prepost_recv_num"]} \
 --hpx:ini=hpx.parcel.zero_copy_receive_optimization={config["zero_copy_recv"]} \
---hpx:ini=hpx.parcel.lci.reg_mem={config["reg_mem"]}'''
+--hpx:ini=hpx.parcel.lci.reg_mem={config["reg_mem"]} \
+--hpx:ini=hpx.parcel.lci.ndevices={config["ndevices"]} \
+--hpx:ini=hpx.parcel.lci.prg_thread_num={prg_thread_num} \
+--hpx:ini=hpx.parcel.lci.ncomps={config["ncomps"]}'''
     return cmd
 
 
@@ -140,15 +167,11 @@ def run_octotiger(root_path, config, extra_arguments=""):
     if platform_config["numa_policy"] == "interleave":
         numactl_cmd = "numactl --interleave=all"
 
-    if config["task"] == "rs":
-        cmd = f'''
+    cmd = f'''
 cd {root_path}/data || exit 1
 srun {get_srun_pmi_option(config)} {numactl_cmd} {get_octotiger_cmd(root_path, config)} {extra_arguments}
 '''
-        print(cmd)
-        sys.stdout.flush()
-        sys.stderr.flush()
-        os.system(cmd)
-    else:
-        print("Unknown task: " + config["task"])
-        exit(1)
+    print(cmd)
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os.system(cmd)

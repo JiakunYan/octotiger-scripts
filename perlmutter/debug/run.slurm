@@ -3,9 +3,9 @@
 #SBATCH --constraint=gpu
 #SBATCH --qos=regular
 #SBATCH --time=00:01:00
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=64
-#SBATCH --gpus-per-task=4
+#SBATCH --ntasks-per-node=2
+#SBATCH --cpus-per-task=32
+#SBATCH --gpus-per-task=2
 #SBATCH --gpu-bind=map_gpu:0,1,2,3
 #SBATCH --threads-per-core=1
 #SBATCH --hint=nomultithread
@@ -14,7 +14,7 @@ module purge
 module load octotiger
 #module load hpx/local-release-pcounter
 #module load lci/local-release-pcounter
-module load lci/local-debug
+#module load lci/local-debug
 module list
 
 OCTO_SCRIPT_PATH=${OCTO_SCRIPT_PATH:-/global/homes/j/jackyan/workspace/octotiger-scripts}
@@ -25,7 +25,7 @@ pp=${2:-"lci"}
 max_level=${3:-"3"}
 
 if [ "$pp" == "lci" ] ; then
-  export LCI_LOG_LEVEL=debug
+#  export LCI_LOG_LEVEL=debug
   export LCI_SERVER_MAX_SENDS=256
   export LCI_SERVER_MAX_RECVS=4096
   export LCI_SERVER_NUM_PKTS=65536
@@ -33,12 +33,13 @@ if [ "$pp" == "lci" ] ; then
   export LCI_PACKET_SIZE=65536
 fi
 SRUN_EXTRA_OPTION=""
-export FI_CXI_RX_MATCH_MODE=software
-export FI_CXI_DEFAULT_CQ_SIZE=1310720
+#export FI_CXI_RX_MATCH_MODE=software
+#export FI_CXI_DEFAULT_CQ_SIZE=1310720
 #  export FI_MR_CACHE_MONITOR=memhooks
-export APEX_DISABLE=1
-export APEX_SCREEN_OUTPUT=1
-export APEX_ENABLE_CUDA=1
+#export APEX_DISABLE=1
+#export APEX_SCREEN_OUTPUT=1
+#export APEX_ENABLE_CUDA=1
+export PMI_MAX_KVS_ENTRIES=128
 
 #export LCT_PCOUNTER_AUTO_DUMP="pcounter.log.%"
 
@@ -65,11 +66,13 @@ export APEX_ENABLE_CUDA=1
 date
 echo "run $task with parcelport $pp; max_level=${max_level}"
 
+export LCI_ENABLE_PRG_NET_ENDPOINT=0
+
 if [ "$task" = "rs" ] ; then
 	srun ${SRUN_EXTRA_OPTION} octotiger \
         --hpx:ini=hpx.stacks.use_guard_pages!=0 \
         --hpx:ini=hpx.parcel.${pp}.priority=1000 \
-        --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=65536 \
+        --hpx:ini=hpx.parcel.${pp}.zero_copy_serialization_threshold=8192 \
         --config_file=${OCTO_SCRIPT_PATH}/data/rotating_star.ini \
         --max_level=${max_level} \
         --stop_step=5 \
@@ -85,5 +88,10 @@ if [ "$task" = "rs" ] ; then
         --hydro_device_kernel_type=CUDA \
         --hydro_host_kernel_type=DEVICE_ONLY \
         --amr_boundary_kernel_type=AMR_OPTIMIZED \
-        --hpx:ini=hpx.parcel.lci.protocol=putva
+        --hpx:threads=64 \
+        --hpx:ini=hpx.parcel.lci.protocol=putva \
+        --hpx:ini=hpx.agas.use_caching=0 \
+        --hpx:ini=hpx.parcel.lci.progress_type=rp \
+        --hpx:ini=hpx.parcel.lci.ndevices=2 \
+        --hpx:ini=hpx.parcel.lci.prg_thread_num=2
 fi

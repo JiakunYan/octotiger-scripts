@@ -5,7 +5,7 @@ def get_platform_config_all():
         "numa_policy": "default",
         "account": None,
         "partition": "medusa",
-        "octotiger_major": "master",
+        "octotiger_major": "local",
         "module_init_file": "/usr/share/lmod/lmod/init/env_modules_python.py"
     }
 

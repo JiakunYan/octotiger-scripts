@@ -9,13 +9,13 @@ sys.path.append(f'{os.environ["HOME"]}/workspace/octotiger-scripts/include')
 from script_common import *
 
 baseline = {
-    "name": "lci",
+    "name": "mpi-i",
     "nnodes_list": [32],
     "griddim": 8,
     "zc_threshold": 8192,
     "task": "rs",
-    "parcelport": "lci",
-    "max_level": 6,
+    "parcelport": "mpi",
+    "max_level": 5,
     "protocol": "putsendrecv",
     "comp_type": "queue",
     "progress_type": "rp",

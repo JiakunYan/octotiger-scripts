@@ -18,29 +18,30 @@ baseline = {
     "parcelport": "lci",
     "protocol": "putsendrecv",
     "comp_type": "queue",
-    "progress_type": "rp",
+    "progress_type": "worker",
     "sendimm": 1,
     "backlog_queue": 0,
     "prepost_recv_num": 1,
     "zero_copy_recv": 1,
     "match_table_type": "hashqueue",
     "cq_type": "array_atomic_faa",
-    "reg_mem": 0
+    "reg_mem": 0,
+    "ndevices": 1
 }
 
 configs = [
-    # baseline,
-    {**baseline, "name": "lci_psr_cq_pin", "sendimm": 0},
-    {**baseline, "name": "lci_sr_sy_mt_i", "protocol": "sendrecv", "comp_type": "sync", "progress_type": "worker"},
-    {**baseline, "name": "lci_sr_sy_pin_i", "protocol": "sendrecv", "comp_type": "sync"},
-    {**baseline, "name": "lci_sr_cq_mt_i", "protocol": "sendrecv", "progress_type": "worker"},
-    {**baseline, "name": "lci_sr_cq_pin_i", "protocol": "sendrecv"},
-    {**baseline, "name": "lci_psr_sy_mt_i", "comp_type": "sync", "progress_type": "worker"},
-    {**baseline, "name": "lci_psr_sy_pin_i", "comp_type": "sync"},
-    {**baseline, "name": "lci_psr_cq_mt_i", "progress_type": "worker"},
-    {**baseline, "name": "lci_psr_cq_pin_i"},
-    {**baseline, "name": "mpi", "parcelport": "mpi", "sendimm": 0},
-    {**baseline, "name": "mpi_i", "parcelport": "mpi", "sendimm": 1},
+    baseline,
+    # {**baseline, "name": "lci_psr_cq_pin", "sendimm": 0},
+    # {**baseline, "name": "lci_sr_sy_mt_i", "protocol": "sendrecv", "comp_type": "sync", "progress_type": "worker"},
+    # {**baseline, "name": "lci_sr_sy_pin_i", "protocol": "sendrecv", "comp_type": "sync"},
+    # {**baseline, "name": "lci_sr_cq_mt_i", "protocol": "sendrecv", "progress_type": "worker"},
+    # {**baseline, "name": "lci_sr_cq_pin_i", "protocol": "sendrecv"},
+    # {**baseline, "name": "lci_psr_sy_mt_i", "comp_type": "sync", "progress_type": "worker"},
+    # {**baseline, "name": "lci_psr_sy_pin_i", "comp_type": "sync"},
+    # {**baseline, "name": "lci_psr_cq_mt_i", "progress_type": "worker"},
+    # {**baseline, "name": "lci_psr_cq_pin_i"},
+    # {**baseline, "name": "mpi", "parcelport": "mpi", "sendimm": 0},
+    # {**baseline, "name": "mpi_i", "parcelport": "mpi", "sendimm": 1},
 ]
 run_as_one_job = True
 

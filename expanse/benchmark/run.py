@@ -10,7 +10,7 @@ from script_common import *
 
 baseline = {
     "name": "lci",
-    "nnodes_list": [64, 128],
+    "nnodes_list": [32],
     "max_level": 6,
     "griddim": 8,
     "zc_threshold": 8192,
@@ -49,8 +49,8 @@ configs = [
     # {**baseline, "name": "lci_putsendrecv_sync_worker_sendimm", "comp_type": "sync", "progress_type": "worker"},
     # {**baseline, "name": "lci_putsendrecv_sync_rp_sendimm", "comp_type": "sync"},
     # {**baseline, "name": "lci_putsendrecv_queue_worker_sendimm", "progress_type": "worker"},
-    {**baseline, "name": "lci_putsendrecv_queue_rp_sendimm"},
-    {**baseline, "name": "mpi", "parcelport": "mpi", "sendimm": 0},
+    # {**baseline, "name": "lci_putsendrecv_queue_rp_sendimm"},
+    # {**baseline, "name": "mpi", "parcelport": "mpi", "sendimm": 0},
     {**baseline, "name": "mpi_sendimm", "parcelport": "mpi", "sendimm": 1},
     # pthread
     # {**baseline, "name": "lci_sendrecv_sync_pthread", "protocol": "sendrecv", "comp_type": "sync", "progress_type": "pthread", "sendimm": 0},
@@ -101,7 +101,7 @@ configs = [
     # {**baseline, "name": "lci_putva_queue_pthread_sendimm", "protocol": "putva", "progress_type": "pthread"},
 
 ]
-run_as_one_job = True
+run_as_one_job = False
 
 if __name__ == "__main__":
     n = 1
@@ -115,9 +115,9 @@ if __name__ == "__main__":
     for i in range(n):
         if run_as_one_job:
             for nnodes in configs[0]["nnodes_list"]:
-                run_slurm(tag, nnodes, configs, name="all", time = "1:00")
+                run_slurm(tag, nnodes, configs, name="all", time = "3:00")
         else:
             for config in configs:
                 # print(config)
                 for nnodes in config["nnodes_list"]:
-                    run_slurm(tag, nnodes, config, time = "1:00")
+                    run_slurm(tag, nnodes, config, time = "3:00")

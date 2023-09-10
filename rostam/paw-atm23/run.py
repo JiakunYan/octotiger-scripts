@@ -11,7 +11,7 @@ from script_common import *
 baseline = {
     "name": "lci",
     "nnodes_list": [8],
-    "max_level": 5,
+    "max_level": 6,
     "griddim": 8,
     "zc_threshold": 8192,
     "task": "rs",
@@ -29,9 +29,9 @@ baseline = {
 }
 
 configs = [
-    {**baseline, "name": "lci", "nnodes_list": [2, 4, 8, 15], "parcelport": "lci"},
-    {**baseline, "name": "mpi", "nnodes_list": [2, 4, 8, 15], "parcelport": "mpi", "sendimm": 0},
-    {**baseline, "name": "mpi_i", "nnodes_list": [2, 4, 8, 15], "parcelport": "mpi", "sendimm": 1},
+    {**baseline, "name": "lci", "nnodes_list": [2, 4, 8, 16], "parcelport": "lci"},
+    {**baseline, "name": "mpi", "nnodes_list": [2, 4, 8, 16], "parcelport": "mpi", "sendimm": 0},
+    {**baseline, "name": "mpi_i", "nnodes_list": [2, 4, 8, 16], "parcelport": "mpi", "sendimm": 1},
 ]
 
 if __name__ == "__main__":
@@ -47,4 +47,4 @@ if __name__ == "__main__":
         for config in configs:
             # print(config)
             for nnodes in config["nnodes_list"]:
-                run_slurm(tag, nnodes, config, time = "3:00")
+                run_slurm(tag, nnodes, config, time = "5:00")

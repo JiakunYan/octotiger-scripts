@@ -88,19 +88,19 @@ def plot(df, x_key, y_key, tag_key, title,
 def batch(df):
 
     df1_tmp = df[df.apply(lambda row:
-                          2 <= row["nnodes"] <= 15 and
+                          row["nnodes"] in [2, 4, 8, 16] and
                           row["max_level"] == 5,
                           axis=1)]
     df1 = df1_tmp.copy()
     label_dict = {
         "lci": "lci",
-        "mpi_i": "mpi-i",
-        "mpi": "mpi-a",
+        "mpi_i": "mpi_i",
+        "mpi": "mpi",
     }
     def sort_key(x):
         ordering = {
-            "mpi-i": 0,
-            "mpi-a": 1,
+            "mpi": 0,
+            "mpi_i": 1,
             "lci": 2,
         }
         return ordering[x["label"]]

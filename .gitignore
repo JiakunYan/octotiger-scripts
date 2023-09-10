@@ -1,7 +1,7 @@
 init
 run
 run-*
-data
+*/**/data
 draw
 log*
 result

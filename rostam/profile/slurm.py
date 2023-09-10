@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
-sys.path.append("../../include")
+sys.path.append(f'{os.environ["HOME"]}/workspace/octotiger-scripts/include')
 from script_common_octotiger import *
 import json
 
@@ -15,9 +15,8 @@ print("Config: " + json.dumps(config))
 current_path = get_current_script_path()
 root_path = os.path.realpath(os.path.join(current_path, "../.."))
 
-# load modules
-load_module(config, build_type="release", enable_pcounter=False, extra=["ucx"])
-module_list()
-
-run_octotiger(root_path, config)
-mv(os.path.join(root_path, "data/pcounter*"), os.path.join(current_path, "run"))
+cmd = f'''
+cd {current_path}/run || exit 1
+srun {get_srun_pmi_option(config)} {current_path}/profile_wrapper.py '{json.dumps(config)}'
+'''
+os.system(cmd)

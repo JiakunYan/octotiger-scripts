@@ -26,6 +26,7 @@ for config in configs:
 
     # os.environ["LCT_PCOUNTER_RECORD_INTERVAL"] = "1000" # record every 1 ms
     # os.environ["LCT_PCOUNTER_AUTO_DUMP"] = "pcounter.log.%"
+    os.environ["LCI_IBV_ENABLE_TD"] = "0"
     extra_arguments = ""
     # os.environ["LCI_USE_DREG"] = "0"
     # extra_arguments = "--hpx:ini=hpx.parcel.zero_copy_optimization=0"
