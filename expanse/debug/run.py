@@ -11,14 +11,16 @@ from script_common import *
 baseline = {
     "name": "lci",
     "nnodes_list": [32],
-    "max_level": 6,
-    "griddim": 8,
-    "zc_threshold": 8192,
+    "max_level": 5,
+    "griddim": 4,
+    "stop_step": 5,
+    "zc_threshold": 4096,
     "task": "rs",
     "parcelport": "lci",
     "protocol": "putsendrecv",
     "comp_type": "queue",
-    "progress_type": "worker",
+    "progress_type": "rp",
+    "prg_thread_num": "auto",
     "sendimm": 1,
     "backlog_queue": 0,
     "prepost_recv_num": 1,
@@ -26,7 +28,8 @@ baseline = {
     "match_table_type": "hashqueue",
     "cq_type": "array_atomic_faa",
     "reg_mem": 0,
-    "ndevices": 1
+    "ndevices": 2,
+    "ncomps": 2
 }
 
 configs = [

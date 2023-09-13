@@ -7,11 +7,9 @@ sys.path.append("../../include")
 from draw_simple import *
 import numpy as np
 
-job_tag = "paper"
-job_name = "20230712-" + job_tag
+job_name = "20230911-basic"
 input_path = "data/"
 output_path = "draw/"
-all_labels = ["name", "nnodes", "max_level", "Total(s)", "Computation(s)", "Regrid(s)"]
 
 def plot(df, x_key, y_key, tag_key, title,
          filename = None, base = "mpi", label_dict=None,
@@ -30,7 +28,6 @@ def plot(df, x_key, y_key, tag_key, title,
     # update labels
     if label_dict:
         for line in lines:
-            print(line)
             label = line["label"]
             if label in label_dict:
                 line["label"] = label_dict[line["label"]]
@@ -42,6 +39,7 @@ def plot(df, x_key, y_key, tag_key, title,
 
     # time
     for line in lines:
+        print(line)
         if with_error:
             ax.errorbar(line["x"], line["y"], line["error"], label=line["label"], marker='.', markerfacecolor='white', capsize=3)
         else:
@@ -88,21 +86,22 @@ def plot(df, x_key, y_key, tag_key, title,
         json.dump({"Time": lines, "Speedup": speedup_lines}, outfile)
 
 def batch(df):
-
+    # Basic LCI v.s. MPI
     df1_tmp = df[df.apply(lambda row:
-                          row["name"] in ["lci", "mpi_sendimm", "mpi"] and
-                          row["nnodes"] >= 2 and
-                          row["max_level"] == 6,
+                          row["name"] in ["lci", "mpi_i", "mpi"] and
+                          2 <= row["nnodes"] <= 32 and
+                          row["max_level"] == 5,
                           axis=1)]
     df1 = df1_tmp.copy()
     label_dict = {
-        "mpi": "mpi-a",
-        "mpi_sendimm": "mpi-i"
+        "lci": "lci",
+        "mpi_i": "mpi_i",
+        "mpi": "mpi",
     }
     def sort_key(x):
         ordering = {
-            "mpi-i": 0,
-            "mpi-a": 1,
+            "mpi_i": 0,
+            "mpi": 1,
             "lci": 2,
         }
         return ordering[x["label"]]
@@ -110,9 +109,59 @@ def batch(df):
          base="lci", with_error=True, label_dict=label_dict, sort_key=sort_key,
          x_label="Node Count", y_label="Time to Solution (s)")
 
+    # Problem Size
+    df1_tmp = df[df.apply(lambda row:
+                          (row["name"] in ["lci", "mpi_i", "mpi"] or
+                           "grid" in row["name"]) and
+                          row["nnodes"] == 32 and
+                          row["max_level"] == 5,
+                          axis=1)]
+    df1 = df1_tmp.copy()
+    df1["name"] = df1.apply(lambda row: row["name"].split("-")[0],
+                             axis=1)
+    def sort_key(x):
+        ordering = {
+            "mpi_i": 0,
+            "mpi": 1,
+            "lci": 2,
+        }
+        return ordering[x["label"]]
+    plot(df1, "griddim", "Total(s)", "name", "Octo-Tiger on SDSC Expanse", filename="problem_size",
+         base="lci", with_error=True, sort_key=sort_key,
+         x_label="Grid Dimension", y_label="Time to Solution (s)")
+    #
+    # df1_tmp = df[df.apply(lambda row:
+    #                       row["name"] in ["lci_worker_d2", "lci_wo_i", "lci_sendrecv", "lci_sync"] and
+    #                       2 <= row["nnodes"] <= 32 and
+    #                       row["max_level"] == 6,
+    #                       axis=1)]
+    # df1 = df1_tmp.copy()
+    # label_dict = {
+    #     "lci_worker_d2": "lci",
+    # }
+    # plot(df1, "nnodes", "Total(s)", "name", "Octo-Tiger on SDSC Expanse", filename="basic_variants",
+    #      base="lci_worker_d2", with_error=True, label_dict=label_dict,
+    #      x_label="Node Count", y_label="Time to Solution (s)")
+    #
+    # df1_tmp = df[df.apply(lambda row:
+    #                       row["name"] in ["lci"] or "_d" in row["name"] and
+    #                       2 <= row["nnodes"] <= 32 and
+    #                       row["max_level"] == 6,
+    #                       axis=1)]
+    # df1 = df1_tmp.copy()
+    # labels = ["lci_{}_d{}".format(t, n) for t in ["worker", "rp"] for n in [1, 2, 4]]
+    # def sort_key(x):
+    #     for i in range(len(labels)):
+    #         if labels[i] == x["label"]:
+    #             return i
+    #     print("cannot find {} in {}".format(x, labels))
+    #     exit(1)
+    # plot(df1, "nnodes", "Total(s)", "name", "Octo-Tiger on SDSC Expanse", filename="device_prg",
+    #      base="lci_worker_d2", with_error=True, sort_key=sort_key,
+    #      x_label="Node Count", y_label="Time to Solution (s)")
+
 
 if __name__ == "__main__":
     df = pd.read_csv(os.path.join(input_path, job_name + ".csv"))
-    df = df[all_labels]
     # interactive(df)
     batch(df)

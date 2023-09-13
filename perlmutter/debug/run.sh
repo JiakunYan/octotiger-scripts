@@ -14,8 +14,8 @@ tasks=("rs")
 max_levels=("5")
 nnodes=(2)
 #pps=("mpi" "lci")
-pps=("mpi")
-#pps=("lci")
+#pps=("mpi")
+pps=("lci")
 
 # create the ./run directory
 mkdir_s ./run

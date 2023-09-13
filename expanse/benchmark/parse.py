@@ -8,8 +8,8 @@ import ast
 import pandas as pd
 import os,sys
 
-name = "20230712-paper"
-input_path = "run/slurm_output.*"
+name = "20230911-basic"
+input_path = "run/{}/slurm_output.*".format(name)
 output_path = "data/"
 filename_pattern = {
     "format": "\S+\.n(\d+)-(\S+)\.j\S+",

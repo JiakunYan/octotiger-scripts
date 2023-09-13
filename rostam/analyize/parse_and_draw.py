@@ -4,34 +4,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tabulate import tabulate
 
-name="lci_putsendrecv_queue_worker_sendimm_l7_async"
-input_file = "run-{}/octotiger_trace.{}.31.log".format(name, name)
-input_file2 = "run-{}/slurm_output.default.n32-{}.*.out".format(name, name)
+name="lci-dim8"
+input_file = "run-{}/octotiger_trace.{}.0.log".format(name, name)
+# input_file2 = "run-{}/slurm_output.default.n32-{}.*.out".format(name, name)
 if __name__ == "__main__":
-    filenames = glob.glob(input_file2)
-    assert len(filenames) == 1
-    with open(filenames[0], "r") as infile:
-        lines = infile.readlines()
-    pattern = "Time scope (?P<scope>\d+) (?P<action>\S+) at (?P<time>\S+) s"
-    time_scope = {}
-    for line in lines:
-        m = re.match(pattern, line)
-        if not m:
-            continue
-        scope = m.group("scope")
-        action = m.group("action")
-        time = float(m.group("time"))
-        if scope not in time_scope:
-            time_scope[scope] = []
-        if action == "start":
-            time_scope[scope].append([time])
-        else:
-            time_scope[scope][-1].append(time)
+    # filenames = glob.glob(input_file2)
+    # assert len(filenames) == 1
+    # with open(filenames[0], "r") as infile:
+    #     lines = infile.readlines()
+    # pattern = "Time scope (?P<scope>\d+) (?P<action>\S+) at (?P<time>\S+) s"
+    # time_scope = {}
+    # for line in lines:
+    #     m = re.match(pattern, line)
+    #     if not m:
+    #         continue
+    #     scope = m.group("scope")
+    #     action = m.group("action")
+    #     time = float(m.group("time"))
+    #     if scope not in time_scope:
+    #         time_scope[scope] = []
+    #     if action == "start":
+    #         time_scope[scope].append([time])
+    #     else:
+    #         time_scope[scope][-1].append(time)
 
     with open(input_file, "r") as infile:
         lines = infile.readlines()
 
-    pattern = "(?P<rank>\d+):(?P<start_time>\S+):send_connection\((?P<p>\S+)\) start:(?P<nzc_size>\d+):(?P<tchunk_size>\d+):(?P<zc_num>\d+):\[(?P<chunks>\S+)?\]"
+    pattern = ".* (?P<rank>\d+):(?P<start_time>\S+):send_connection\((?P<p>\S+)\) start:(?P<nzc_size>\d+):(?P<tchunk_size>\d+):(?P<zc_num>\d+):\[(?P<chunks>\S+)?\]"
     start_time_list = []
     nzc_size_list = []
     tchunk_size_list = []
@@ -64,32 +64,14 @@ if __name__ == "__main__":
 
     def stat_and_draw(ax, name, data):
         if len(data) == 0:
-            return
+            return [name, 0, 0, 0, 0, 0]
         data_np = np.array(data)
         ax.hist(data, bins=200)
         ax.set_title(name)
         return [name, len(data_np), data_np.mean(), data_np.std(), data_np.min(), data_np.max()]
 
-    def stat_and_draw_time(ax, name, data, time_scope):
-        if len(data) == 0:
-            return
-        data_np = np.array(data)
-        base_time = np.min(data_np)
-        data_np -= base_time
-        duration = np.max(data_np)
-        print(duration)
-        n, bins, patches = ax.hist(data_np, bins=int(duration / 0.1))
-        for i, scope in enumerate(time_scope):
-            for j, (start, end) in enumerate(time_scope[scope]):
-                start = start - base_time
-                end = end - base_time
-                y = - ((i + 1) + j * 0.1) * max(n) / 10
-                ax.plot([start, end], [y, y], color="C"+str(i))
-        ax.set_title(name)
-        return [name, len(data_np), data_np.mean(), data_np.std(), np.min(data_np), np.max(data_np)]
 
-
-    def draw_trend(ax, name, time, data, time_scope):
+    def draw_trend(ax, name, time, data):
         if len(data) == 0:
             return
         time_np = np.array(time)
@@ -99,12 +81,6 @@ if __name__ == "__main__":
         duration = np.max(time_np)
         print(duration)
         n, bins, patches = ax.hist(time_np, bins=int(duration / 0.1))
-        # for i, scope in enumerate(time_scope):
-        #     for j, (start, end) in enumerate(time_scope[scope]):
-        #         start = start - base_time
-        #         end = end - base_time
-        #         y = - ((i + 1) + j * 0.1) * max(n) / 10
-        #         ax.plot([start, end], [y, y], color="C"+str(i), linewidth=5)
         trend_x = []
         trend_y = []
         start = 0
@@ -122,8 +98,7 @@ if __name__ == "__main__":
         ax.set_title(name)
     fig, axs = plt.subplots(2, 3, figsize=(20, 10))
     data = []
-    # data.append(stat_and_draw_time(axs[0][0], "start time", start_time_list, time_scope))
-    draw_trend(axs[0][0], "message size trend", start_time_list, total_size_list, time_scope)
+    draw_trend(axs[0][0], "message size trend", start_time_list, total_size_list)
     data.append(stat_and_draw(axs[0][1], "nzc chunk size", nzc_size_list))
     data.append(stat_and_draw(axs[0][2], "tchunk size", tchunk_size_list))
     data.append(stat_and_draw(axs[1][0], "zc chunk number", zc_num_list))
@@ -136,6 +111,7 @@ if __name__ == "__main__":
     #     for entry in data:
     #         text += format_row.format("", *entry)
     #     return text
+    print(data)
     text = tabulate(data, headers=["Name", "Count", "Mean", "STD", "Min", "Max"])
     # text = format_text(["Name", "Count", "Mean", "STD", "Min", "Max"], data)
     print(text)

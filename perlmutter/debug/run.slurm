@@ -4,8 +4,8 @@
 #SBATCH --qos=regular
 #SBATCH --time=00:01:00
 #SBATCH --ntasks-per-node=2
-#SBATCH --cpus-per-task=32
-#SBATCH --gpus-per-task=2
+#SBATCH --cpus-per-task=16
+#SBATCH --gpus-per-task=1
 #SBATCH --gpu-bind=map_gpu:0,1,2,3
 #SBATCH --threads-per-core=1
 #SBATCH --hint=nomultithread
@@ -88,10 +88,10 @@ if [ "$task" = "rs" ] ; then
         --hydro_device_kernel_type=CUDA \
         --hydro_host_kernel_type=DEVICE_ONLY \
         --amr_boundary_kernel_type=AMR_OPTIMIZED \
-        --hpx:threads=64 \
+        --hpx:threads=16 \
         --hpx:ini=hpx.parcel.lci.protocol=putva \
         --hpx:ini=hpx.agas.use_caching=0 \
         --hpx:ini=hpx.parcel.lci.progress_type=rp \
-        --hpx:ini=hpx.parcel.lci.ndevices=2 \
-        --hpx:ini=hpx.parcel.lci.prg_thread_num=2
+        --hpx:ini=hpx.parcel.lci.ndevices=1 \
+        --hpx:ini=hpx.parcel.lci.prg_thread_num=1
 fi
