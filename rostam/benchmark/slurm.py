@@ -23,7 +23,11 @@ start_time = time.time()
 for config in configs:
     print("Config: " + json.dumps(config))
     # load modules
-    load_module(config, build_type="release", enable_pcounter=False, extra=["ucx"])
+    extra = ["ucx"]
+    if "special_branch" in config:
+        extra += ["hpx/" + config["special_branch"], "lci/local-release-safeprog"]
+        print(extra)
+    load_module(config, build_type="release", enable_pcounter=False, extra=extra)
     module_list()
 
     run_octotiger(root_path, config)

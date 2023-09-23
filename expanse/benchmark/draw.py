@@ -7,12 +7,12 @@ sys.path.append("../../include")
 from draw_simple import *
 import numpy as np
 
-job_name = "20230911-basic"
+job_name = "20230916-all"
 input_path = "data/"
 output_path = "draw/"
 
 def plot(df, x_key, y_key, tag_key, title,
-         filename = None, base = "mpi", label_dict=None,
+         filename = None, base = None, smaller_is_better = True, label_dict=None,
          with_error=True, sort_key=None, x_label=None, y_label=None):
     if label_dict is None:
         label_dict = {}
@@ -51,25 +51,39 @@ def plot(df, x_key, y_key, tag_key, title,
     # ax.legend()
 
     # speedup
-    ax2 = ax.twinx()
+    baseline = None
+    ax2 = None
+    speedup_lines = None
     for line in lines:
         if base == line["label"]:
             baseline = line
             break
-    speedup_lines = []
-    for line in lines:
-        if line['label'] == baseline['label']:
-            continue
-        speedup = [float(x) / float(b) for x, b in zip(line["y"], baseline["y"])]
-        speedup_lines.append({"label": line["label"], "x": line["x"], "y": speedup})
-        ax2.plot(line["x"], speedup, label="{} / {}".format(line['label'], baseline['label']), marker='.', markerfacecolor='white', linestyle='dashed')
-    ax2.set_ylabel("Speedup")
+    if baseline:
+        ax2 = ax.twinx()
+        speedup_lines = []
+        for line in lines:
+            if line['label'] == baseline['label']:
+                ax2.plot(line["x"], [1 for x in range(len(line["x"]))], linestyle='dashed')
+                continue
+            if smaller_is_better:
+                speedup = [float(x) / float(b) for x, b in zip(line["y"], baseline["y"])]
+                label = "{} / {}".format(line['label'], baseline['label'])
+            else:
+                speedup = [float(b) / float(x) for x, b in zip(line["y"], baseline["y"])]
+                label = "{} / {}".format(baseline['label'], line['label'])
+            speedup_lines.append({"label": line["label"], "x": line["x"], "y": speedup})
+            ax2.plot(line["x"], speedup, label=label, marker='.', markerfacecolor='white', linestyle='dashed')
+        ax2.set_ylabel("Speedup")
     # ax2.legend()
 
     # ask matplotlib for the plotted objects and their labels
-    lines1, labels1 = ax.get_legend_handles_labels()
-    lines2, labels2 = ax2.get_legend_handles_labels()
-    ax2.legend(lines1 + lines2, labels1 + labels2, loc=0)
+    if ax2:
+        lines1, labels1 = ax.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax2.legend(lines1 + lines2, labels1 + labels2, loc=0)
+    else:
+        ax.legend()
+    plt.tight_layout()
 
     if filename is None:
         filename = title
@@ -80,7 +94,7 @@ def plot(df, x_key, y_key, tag_key, title,
     if not os.path.exists(dirname):
         os.mkdir(dirname)
     output_png_name = os.path.join(dirname, "{}.png".format(filename))
-    fig.savefig(output_png_name)
+    fig.savefig(output_png_name, bbox_inches='tight')
     output_json_name = os.path.join(dirname, "{}.json".format(filename))
     with open(output_json_name, 'w') as outfile:
         json.dump({"Time": lines, "Speedup": speedup_lines}, outfile)
@@ -98,15 +112,8 @@ def batch(df):
         "mpi_i": "mpi_i",
         "mpi": "mpi",
     }
-    def sort_key(x):
-        ordering = {
-            "mpi_i": 0,
-            "mpi": 1,
-            "lci": 2,
-        }
-        return ordering[x["label"]]
     plot(df1, "nnodes", "Total(s)", "name", "Octo-Tiger on SDSC Expanse", filename="brief",
-         base="lci", with_error=True, label_dict=label_dict, sort_key=sort_key,
+         base="lci", with_error=True, label_dict=label_dict,
          x_label="Node Count", y_label="Time to Solution (s)")
 
     # Problem Size
@@ -119,15 +126,8 @@ def batch(df):
     df1 = df1_tmp.copy()
     df1["name"] = df1.apply(lambda row: row["name"].split("-")[0],
                              axis=1)
-    def sort_key(x):
-        ordering = {
-            "mpi_i": 0,
-            "mpi": 1,
-            "lci": 2,
-        }
-        return ordering[x["label"]]
     plot(df1, "griddim", "Total(s)", "name", "Octo-Tiger on SDSC Expanse", filename="problem_size",
-         base="lci", with_error=True, sort_key=sort_key,
+         base="lci", with_error=True,
          x_label="Grid Dimension", y_label="Time to Solution (s)")
     #
     # df1_tmp = df[df.apply(lambda row:

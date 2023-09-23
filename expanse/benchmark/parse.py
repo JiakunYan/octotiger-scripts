@@ -8,7 +8,7 @@ import ast
 import pandas as pd
 import os,sys
 
-name = "20230911-basic"
+name = "20230916-all"
 input_path = "run/{}/slurm_output.*".format(name)
 output_path = "data/"
 filename_pattern = {

@@ -65,6 +65,8 @@ def get_environ_setting(config):
     if "reg_mem" in config and config["reg_mem"] or config["progress_type"] == "worker":
         # We only use the registration cache when only one progress thread is doing the registration.
         ret["LCI_USE_DREG"] = "0"
+    if "mem_reg_cache" in config:
+        ret["LCI_USE_DREG"] = str(config["mem_reg_cache"])
     return ret
 
 
@@ -115,6 +117,10 @@ def get_octotiger_cmd(root_path, config):
         else:
             prg_thread_num = config["prg_thread_num"]
 
+    agas_use_caching = 0
+    if "agas_caching" in config:
+        agas_use_caching = config["agas_caching"]
+
     if config["task"] == "rs":
         config_filename = "rotating_star.ini"
     elif config["task"] == "gr":
@@ -145,7 +151,7 @@ def get_octotiger_cmd(root_path, config):
 --hydro_host_kernel_type=LEGACY \
 --amr_boundary_kernel_type=AMR_OPTIMIZED \
 --hpx:threads={get_nthreads(config)} \
---hpx:ini=hpx.agas.use_caching=0 \
+--hpx:ini=hpx.agas.use_caching={agas_use_caching} \
 --hpx:ini=hpx.parcel.lci.protocol={config["protocol"]} \
 --hpx:ini=hpx.parcel.lci.comp_type={config["comp_type"]} \
 --hpx:ini=hpx.parcel.lci.progress_type={config["progress_type"]} \

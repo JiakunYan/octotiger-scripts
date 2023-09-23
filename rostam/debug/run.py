@@ -9,8 +9,8 @@ sys.path.append("../../include")
 from script_common import *
 
 baseline = {
-    "name": "lci_l5",
-    "nnodes_list": [8],
+    "name": "lci",
+    "nnodes_list": [2],
     "max_level": 5,
     "griddim": 2,
     "stop_step": 30,
@@ -28,15 +28,15 @@ baseline = {
     "match_table_type": "hashqueue",
     "cq_type": "array_atomic_faa",
     "reg_mem": 0,
-    "ndevices": 4,
-    "ncomps": 1,
+    "ndevices": 2,
+    "ncomps": 2,
 }
 
 configs = [
-    # baseline,
-    {**baseline, "name": "lci_c1", "ncomps": 1},
-    {**baseline, "name": "lci_c2", "ncomps": 2},
-    {**baseline, "name": "lci_c4", "ncomps": 4},
+    baseline,
+    # {**baseline, "name": "lci_c1", "ncomps": 1},
+    # {**baseline, "name": "lci_c2", "ncomps": 2},
+    # {**baseline, "name": "lci_c4", "ncomps": 4},
     # {**baseline, "name": "lci_l5_worker_d1", "ndevices": 1, "progress_type": "worker"},
     # {**baseline, "name": "lci_l5_worker_d2", "ndevices": 2, "progress_type": "worker"},
     # {**baseline, "name": "lci_l5_worker_d4", "ndevices": 4, "progress_type": "worker"},
