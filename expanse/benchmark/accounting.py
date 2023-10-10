@@ -20,18 +20,21 @@ if __name__ == "__main__":
         time_pattern = ".*Executed .* configs\. Total time is (\S+)s\."
         with open(filename, "r") as infile:
             found = False
-            for line in infile.readlines():
-                m = re.match(time_pattern, line)
-                if m:
-                    time = m.groups()[0]
-                    time = float(time)
-                    credit = nnodes * ncores * time / 3600
-                    found = True
-                    total_credit += credit
-                    break
-            if not found:
-                print("{} not found!".format(filename))
-                nfiles_not_found += 1
+            try:
+                for line in infile.readlines():
+                    m = re.match(time_pattern, line)
+                    if m:
+                        time = m.groups()[0]
+                        time = float(time)
+                        credit = nnodes * ncores * time / 3600
+                        found = True
+                        total_credit += credit
+                        break
+                if not found:
+                    print("{} not found!".format(filename))
+                    nfiles_not_found += 1
+            except:
+                print("Error on file " + filename)
     print("Total files: {}".format(len(filenames)))
     print("Files not found: {}".format(nfiles_not_found))
     print("Total credits: {}".format(total_credit))

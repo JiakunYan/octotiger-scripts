@@ -6,14 +6,15 @@ from matplotlib import pyplot as plt
 sys.path.append("../../include")
 from draw_simple import *
 import numpy as np
+import itertools
 
-job_name = "20230916-all"
+job_name = "20231004-final"
 input_path = "data/"
 output_path = "draw/"
 
 def plot(df, x_key, y_key, tag_key, title,
          filename = None, base = None, smaller_is_better = True, label_dict=None,
-         with_error=True, sort_key=None, x_label=None, y_label=None):
+         with_error=True, sort_key=None, x_label=None, y_label=None, position="all"):
     if label_dict is None:
         label_dict = {}
     if x_label is None:
@@ -23,7 +24,7 @@ def plot(df, x_key, y_key, tag_key, title,
 
     df = df.sort_values(x_key)
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(4.8, 3.6))
     lines = parse_tag(df, x_key, y_key, tag_key)
     # update labels
     if label_dict:
@@ -37,15 +38,18 @@ def plot(df, x_key, y_key, tag_key, title,
     if sort_key:
         lines.sort(key=sort_key)
 
+    markers = itertools.cycle(('D', 'o', 'v', ',', '+'))
     # time
     for line in lines:
         print(line)
+        line["marker"] = next(markers)
         if with_error:
-            ax.errorbar(line["x"], line["y"], line["error"], label=line["label"], marker='.', markerfacecolor='white', capsize=3)
+            ax.errorbar(line["x"], line["y"], line["error"], label=line["label"], marker=line["marker"], markerfacecolor='white', capsize=3, markersize=8, linewidth=2)
         else:
-            ax.plot(line["x"], line["y"], label=line["label"], marker='.', markerfacecolor='white')
+            ax.plot(line["x"], line["y"], label=line["label"], marker=line["marker"], markerfacecolor='white', markersize=8, linewidth=2)
     ax.set_xlabel(x_label)
-    ax.set_ylabel(y_label)
+    if position == "left" or position == "all":
+        ax.set_ylabel(y_label)
     ax.set_title(title)
     # ax.legend(bbox_to_anchor = (1.05, 0.6))
     # ax.legend()
@@ -63,7 +67,7 @@ def plot(df, x_key, y_key, tag_key, title,
         speedup_lines = []
         for line in lines:
             if line['label'] == baseline['label']:
-                ax2.plot(line["x"], [1 for x in range(len(line["x"]))], linestyle='dashed')
+                ax2.plot(line["x"], [1 for x in range(len(line["x"]))], linestyle='dotted')
                 continue
             if smaller_is_better:
                 speedup = [float(x) / float(b) for x, b in zip(line["y"], baseline["y"])]
@@ -72,8 +76,9 @@ def plot(df, x_key, y_key, tag_key, title,
                 speedup = [float(b) / float(x) for x, b in zip(line["y"], baseline["y"])]
                 label = "{} / {}".format(baseline['label'], line['label'])
             speedup_lines.append({"label": line["label"], "x": line["x"], "y": speedup})
-            ax2.plot(line["x"], speedup, label=label, marker='.', markerfacecolor='white', linestyle='dashed')
-        ax2.set_ylabel("Speedup")
+            ax2.plot(line["x"], speedup, label=label, marker=line["marker"], markerfacecolor='white', linestyle='dotted', markersize=8, linewidth=2)
+        if position == "right" or position == "all":
+            ax2.set_ylabel("Speedup")
     # ax2.legend()
 
     # ask matplotlib for the plotted objects and their labels
@@ -112,9 +117,16 @@ def batch(df):
         "mpi_i": "mpi_i",
         "mpi": "mpi",
     }
-    plot(df1, "nnodes", "Total(s)", "name", "Octo-Tiger on SDSC Expanse", filename="brief",
-         base="lci", with_error=True, label_dict=label_dict,
-         x_label="Node Count", y_label="Time to Solution (s)")
+    def sort_key(x):
+        ordering = {
+            "lci": 0,
+            "mpi": 1,
+            "mpi_i": 2,
+        }
+        return ordering[x["label"]]
+    plot(df1, "nnodes", "Total(s)", "name", None, filename="brief",
+         base="lci", with_error=True, label_dict=label_dict, sort_key=sort_key,
+         x_label="Node Count", y_label="Time to Solution (s)", position="left")
 
     # Problem Size
     df1_tmp = df[df.apply(lambda row:
@@ -126,9 +138,9 @@ def batch(df):
     df1 = df1_tmp.copy()
     df1["name"] = df1.apply(lambda row: row["name"].split("-")[0],
                              axis=1)
-    plot(df1, "griddim", "Total(s)", "name", "Octo-Tiger on SDSC Expanse", filename="problem_size",
-         base="lci", with_error=True,
-         x_label="Grid Dimension", y_label="Time to Solution (s)")
+    plot(df1, "griddim", "Total(s)", "name", None, filename="problem_size",
+         base="lci", with_error=True, sort_key=sort_key,
+         x_label="Grid Dimension", y_label="Time to Solution (s)", position="left")
     #
     # df1_tmp = df[df.apply(lambda row:
     #                       row["name"] in ["lci_worker_d2", "lci_wo_i", "lci_sendrecv", "lci_sync"] and

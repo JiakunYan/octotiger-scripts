@@ -79,18 +79,21 @@ def get_module():
 def module_list():
     os.system("module list")
 
-def run_slurm(tag, nnodes, config, time="00:05:00", name=None):
+def run_slurm(tag, nnodes, config, time="00:05:00", name=None, partition=None, extra_args=None):
     if name is None:
         name = config["name"]
     job_name="n{}-{}".format(nnodes, name)
     output_filename = "./run/slurm_output.{}.%x.j%j.out".format(tag)
     account = get_platform_config("account")
-    partition = get_platform_config("partition")
+    if not partition:
+        partition = get_platform_config("partition")
     platform_args = ""
     if account:
         platform_args += "--account={} ".format(account)
     if partition:
         platform_args += "--partition={} ".format(partition)
+    if extra_args:
+        platform_args += extra_args + " "
 
     command = f'''
     sbatch --export=ALL \

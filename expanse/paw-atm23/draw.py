@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 sys.path.append("../../include")
 from draw_simple import *
 import numpy as np
+import itertools
 
 job_name = "paw-atm23-camera-ready"
 input_path = "data/"
@@ -38,13 +39,15 @@ def plot(df, x_key, y_key, tag_key, title,
     if sort_key:
         lines.sort(key=sort_key)
 
+    markers = itertools.cycle(('.', 'o', 'v', ',', '+'))
     # time
     for line in lines:
         print(line)
+        line["marker"] = next(markers)
         if with_error:
-            ax.errorbar(line["x"], line["y"], line["error"], label=line["label"], marker='.', markerfacecolor='white', capsize=3)
+            ax.errorbar(line["x"], line["y"], line["error"], label=line["label"], marker=line["marker"], markerfacecolor='white', capsize=3)
         else:
-            ax.plot(line["x"], line["y"], label=line["label"], marker='.', markerfacecolor='white')
+            ax.plot(line["x"], line["y"], label=line["label"], marker=line["marker"], markerfacecolor='white')
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     ax.set_title(title)
@@ -74,7 +77,7 @@ def plot(df, x_key, y_key, tag_key, title,
                 speedup = [float(b) / float(x) for x, b in zip(line["y"], baseline["y"])]
                 label = "{} / {}".format(baseline['label'], line['label'])
             speedup_lines.append({"label": line["label"], "x": line["x"], "y": speedup})
-            ax2.plot(line["x"], speedup, label=label, marker='.', markerfacecolor='white', linestyle='dashed')
+            ax2.plot(line["x"], speedup, label=label, marker=line["marker"], markerfacecolor='white', linestyle='dashed')
         ax2.set_ylabel("Speedup")
     # ax2.legend()
 

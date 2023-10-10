@@ -18,6 +18,7 @@ def get_default_config():
         "prg_thread_core": -1,
         "prepost_recv_num": 1,
         "zero_copy_recv": 1,
+        "in_buffer_assembly": 1,
         "match_table_type": "hashqueue",
         "cq_type": "array_atomic_faa",
         "reg_mem": 0,
@@ -162,7 +163,8 @@ def get_octotiger_cmd(root_path, config):
 --hpx:ini=hpx.parcel.lci.reg_mem={config["reg_mem"]} \
 --hpx:ini=hpx.parcel.lci.ndevices={config["ndevices"]} \
 --hpx:ini=hpx.parcel.lci.prg_thread_num={prg_thread_num} \
---hpx:ini=hpx.parcel.lci.ncomps={config["ncomps"]}'''
+--hpx:ini=hpx.parcel.lci.ncomps={config["ncomps"]} \
+--hpx:ini=hpx.parcel.lci.enable_in_buffer_assembly={config["in_buffer_assembly"]}'''
     return cmd
 
 
